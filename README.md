@@ -6,6 +6,17 @@
 ![版本](https://img.shields.io/badge/version-V2.2.1-2ea44f)
 ![许可](https://img.shields.io/badge/license-MIT-blue)
 
+## 在线使用
+
+| 用法 | 链接 |
+|---|---|
+| **直接打开**（GitHub Pages） | https://cilurus.github.io/L-home-page/ |
+| **下载单文件**（Releases，约 160 KB） | https://github.com/Cilurus/L-home-page/releases/download/v2.2.1/L-home-page-v2.2.1.html |
+| CDN 直链（jsDelivr，无需配置） | `https://cdn.jsdelivr.net/gh/Cilurus/L-home-page@main/index%20-%20new.html` |
+| 查看源码原文 | `https://raw.githubusercontent.com/Cilurus/L-home-page/main/index%20-%20new.html` |
+
+下载得到的 HTML 双击即可用，不需要安装任何东西。
+
 ---
 
 ## 功能
@@ -25,7 +36,7 @@
 
 ```bash
 # 方式一：直接双击
-# 下载 index - new.html，双击用浏览器打开即可
+# 从 Releases 下载的 L-home-page-v2.2.1.html，或仓库里的 index - new.html，双击即可
 
 # 方式二：本地起个静态服务（推荐，localStorage 行为与线上一致）
 python3 -m http.server 8080
@@ -42,80 +53,57 @@ python3 -m http.server 8080
 
 ## 部署
 
-它是纯静态单文件，任何能托管 HTML 的地方都能跑。
+主文件是纯静态 HTML，任何能托管网页的地方都能跑。本仓库当前的发布形态：
 
-### 1. GitHub Pages（推荐：给别人一个固定网址）
+### GitHub Pages（已启用）
 
-> 本仓库已内置 `.github/workflows/pages.yml`：push 到 `main` 会自动发布到
-> **https://cilurus.github.io/L-home-page/**。
-> 首次启用需要仓库管理员点两处（Actions 无法自举，会报 `Resource not accessible by integration`）：
-> 1. **Settings → Actions → General → Workflow permissions** 选 **Read and write permissions**
-> 2. **Settings → Pages → Build and deployment → Source** 选 **GitHub Actions**
->
-> 之后到 **Actions → Deploy to GitHub Pages → Re-run all jobs** 即可，后续每次 push 自动更新。
+- 网址：**https://cilurus.github.io/L-home-page/**
+- 由 `.github/workflows/pages.yml` 自动发布：push 到 `main` 即触发；发布目录只放 `index.html` 和主文件（`archive/`、`tests/`、`tools/` 不上线）
+- 仓库 Settings → Pages → Source 为 **GitHub Actions**（即 `build_type: workflow`）
+- 根路径可直接打开，靠的是根目录那个约 1 KB 的 `index.html` 跳转页，它指向带空格的主文件名
 
-**不启用 Pages 也能马上分享的链接**（jsDelivr CDN 直读仓库文件，无需任何配置）：
+> 首次启用 Pages 时 Actions 会报 `Create Pages site failed. Resource not accessible by integration`：
+> GITHUB_TOKEN 没有创建 Pages 站点的权限，必须由管理员在 Settings → Pages 里手动选一次 **GitHub Actions**。
+> 启用后再 push（或 Re-run jobs）即可成功。
 
-```
-https://cdn.jsdelivr.net/gh/Cilurus/L-home-page@main/index%20-%20new.html
-```
-
-直接下载单个文件：
-
-```
-https://raw.githubusercontent.com/Cilurus/L-home-page/main/index%20-%20new.html
-```
-
-手动开 Pages（不想用 Actions 时）：
-
-1. 仓库 **Settings → Pages → Build and deployment**
-   - Source 选 **Deploy from a branch**
-   - Branch 选 `main`，目录选 `/ (root)`，Save
-2. 等 1 分钟左右，访问 `https://<用户名>.github.io/<仓库名>/`（仓库里已有 `index.html` 跳转页，可直接用根路径）
-
-> 由于主文件名带空格（`index - new.html`），直接访问它要写成 `.../index%20-%20new.html`。
-> 仓库根目录已放了一个约 1 KB 的 `index.html` 跳转页，所以站点根路径可以直接打开。
-
-### 2. GitHub Releases（推荐：给别人"下载一个文件"）
+### 本地起服务
 
 ```bash
-git tag -a v2.2.1 -m "V2.2.1"      # 仓库里已有该 tag，改版本时再打新的
+python3 -m http.server 8080
+# 打开 http://localhost:8080/
+```
+
+### 其他静态托管
+
+Vercel / Netlify / Cloudflare Pages / 对象存储（OSS、COS、S3）：连仓库、构建命令留空、输出目录填 `/`。
+主文件名带空格，想让根路径直接访问就把 `index.html` 一起部署。
+
+### 发布新版本
+
+```bash
+# 1. 改主文件 + 快照进 archive/ + 补 CHANGELOG
+git add -A && git commit -m "feat: V2.2.2 ..."
+
+# 2. 打 tag 并推送（Pages 随 push 自动更新）
+git tag -a v2.2.2 -m "V2.2.2"
 git push origin main --tags
 ```
 
-在 GitHub 仓库 **Releases → Draft a new release** 选择 tag，把 `index - new.html` 拖进附件区发布。
-对方点开 release 就能直接下载这一个 HTML，双击即用，不需要装任何东西。
-
-### 3. 直接把文件发给对方
-
-最省事：发 `index - new.html`（约 160 KB），对方保存后双击用浏览器打开即可。
-
-### 4. 其他静态托管
-
-Vercel / Netlify / Cloudflare Pages / 对象存储（OSS、COS、S3）都可以，把仓库连上去、构建命令留空、输出目录填 `/` 即可。
-
-## 上传到 GitHub
-
-本地仓库已初始化并完成首次提交（`main` 分支 + `v2.2.1` tag）。创建空仓库后执行：
+然后在 Releases 里基于该 tag 建 release，把 HTML 作为附件上传；也可以走 API 免拖拽：
 
 ```bash
-git remote add origin https://github.com/<用户名>/<仓库名>.git
-git push -u origin main --tags
+curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: text/html" \
+  --data-binary @"index - new.html" \
+  "https://uploads.github.com/repos/Cilurus/L-home-page/releases/<release_id>/assets?name=L-home-page-v2.2.2.html"
 ```
-
-> 提交身份当前是占位值（`JH <jh@users.noreply.github.com>`）。
-> 想换成自己的 GitHub 账号邮箱后再提交：
-> ```bash
-> git config user.name "你的名字"
-> git config user.email "你的邮箱"
-> git commit --amend --reset-author --no-edit
-> ```
 
 ## 项目结构
 
 ```
 .
 ├── index - new.html                 # 主文件：全部 HTML / CSS / JS（唯一交付物）
+├── index.html                       # 站点根路径的跳转页（指向主文件，约 1 KB）
+├── .github/workflows/pages.yml       # push 到 main 自动发布到 GitHub Pages
 ├── archive/                         # 历史版本快照（只增不删，可随时回退）
 ├── tests/                           # Node 原生测试（vm 沙箱跑真实页面代码）
 │   └── harness.mjs                  # 极简 DOM 桩 + localStorage 桩
