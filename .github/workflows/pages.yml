@@ -29,8 +29,10 @@ jobs:
       - name: 准备发布目录（只放页面，不带 archive/tests）
         run: |
           mkdir -p dist
-          cp index.html dist/
-          cp "index - new.html" dist/
+          # 根路径直接输出真实页面，避免先闪一下跳转页
+          cp "index - new.html" dist/index.html
+          # 保留原名，老链接继续可用
+          cp "index - new.html" "dist/index - new.html"
           ls -l dist
 
       - uses: actions/configure-pages@v5

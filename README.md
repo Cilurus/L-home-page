@@ -58,9 +58,10 @@ python3 -m http.server 8080
 ### GitHub Pages（已启用）
 
 - 网址：**https://cilurus.github.io/L-home-page/**
-- 由 `.github/workflows/pages.yml` 自动发布：push 到 `main` 即触发；发布目录只放 `index.html` 和主文件（`archive/`、`tests/`、`tools/` 不上线）
+- 由 `.github/workflows/pages.yml` 自动发布：push 到 `main` 即触发；发布目录只放页面（`archive/`、`tests/`、`tools/` 不上线）
 - 仓库 Settings → Pages → Source 为 **GitHub Actions**（即 `build_type: workflow`）
-- 根路径可直接打开，靠的是根目录那个约 1 KB 的 `index.html` 跳转页，它指向带空格的主文件名
+- 根路径返回的是**真实页面**：工作流把主文件复制为 `dist/index.html`，所以打开没有跳转闪屏；同时保留一份带空格的原名供旧链接使用。
+  仓库根目录的 `index.html` 只是给「Deploy from a branch」模式用的跳转页，Actions 模式下不参与发布。
 
 > 首次启用 Pages 时 Actions 会报 `Create Pages site failed. Resource not accessible by integration`：
 > GITHUB_TOKEN 没有创建 Pages 站点的权限，必须由管理员在 Settings → Pages 里手动选一次 **GitHub Actions**。
