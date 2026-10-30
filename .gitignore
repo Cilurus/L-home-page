@@ -1,0 +1,29 @@
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# ---- 编辑器与 IDE ----
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ---- 依赖 / 构建产物（本项目零依赖，正常不会出现）----
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+
+# ---- 临时文件 ----
+.tmp-*
+*.tmp
+.shot*.png
+
+# ---- 非项目文件（保留在本地，但不进公开仓库）----
+# 当前 workspace 里与本项目无关的副本：agent 工具配置（含本机绝对路径）、旧图形实验页
+reasonix.toml
+图形实验.html

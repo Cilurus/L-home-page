@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.html text
+*.md text
+*.mjs text
+*.js text
+*.toml text
+*.png binary
+*.jpg binary
+*.ico binary
