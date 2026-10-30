@@ -42,22 +42,60 @@ python3 -m http.server 8080
 
 ## 部署
 
-它是纯静态单文件，任何能托管 HTML 的地方都能跑：
+它是纯静态单文件，任何能托管 HTML 的地方都能跑。
 
-| 方式 | 做法 | 适合 |
-|---|---|---|
-| **GitHub Pages** | 仓库 Settings → Pages → Source 选 `main` / root | 想要一个固定网址，随时打开 |
-| **GitHub Release** | 打 tag 后上传 `index - new.html` 作为附件 | 想给别人「下载一个文件」 |
-| 直接发文件 | 把 HTML 发给对方，双击打开 | 最省事 |
-| 任意静态托管 | Vercel / Netlify / Cloudflare Pages / 对象存储 | 想要自定义域名 |
+### 1. GitHub Pages（推荐：给别人一个固定网址）
 
-> 文件名含空格（`index - new.html`），直接当网址用需要编码为 `index%20-%20new.html`。
-> 若想用根路径直接访问，部署时把它重命名为 `index.html` 即可。
+1. 把仓库推上 GitHub（见下一节），确保默认分支为 `main`
+2. 仓库 **Settings → Pages → Build and deployment**
+   - Source 选 **Deploy from a branch**
+   - Branch 选 `main`，目录选 `/ (root)`，Save
+3. 等 1 分钟左右，访问 `https://<用户名>.github.io/<仓库名>/`
+
+> 由于文件名带空格，直接访问要写成 `.../index%20-%20new.html`。
+> 想用干净网址（`.../` 直接打开）就在仓库里加一个 `index.html`，内容有两种写法：
+> - 一行跳转：`<meta http-equiv="refresh" content="0; url=index%20-%20new.html">`
+> - 或者干脆把 `index - new.html` 改名为 `index.html`（记得同步改 `tests/harness.mjs`、`tools/verify.mjs` 里的文件名）
+
+### 2. GitHub Releases（推荐：给别人"下载一个文件"）
+
+```bash
+git tag -a v2.2.1 -m "V2.2.1"      # 仓库里已有该 tag，改版本时再打新的
+git push origin main --tags
+```
+
+在 GitHub 仓库 **Releases → Draft a new release** 选择 tag，把 `index - new.html` 拖进附件区发布。
+对方点开 release 就能直接下载这一个 HTML，双击即用，不需要装任何东西。
+
+### 3. 直接把文件发给对方
+
+最省事：发 `index - new.html`（约 160 KB），对方保存后双击用浏览器打开即可。
+
+### 4. 其他静态托管
+
+Vercel / Netlify / Cloudflare Pages / 对象存储（OSS、COS、S3）都可以，把仓库连上去、构建命令留空、输出目录填 `/` 即可。
+
+## 上传到 GitHub
+
+本地仓库已初始化并完成首次提交（`main` 分支 + `v2.2.1` tag）。创建空仓库后执行：
+
+```bash
+git remote add origin https://github.com/<用户名>/<仓库名>.git
+git push -u origin main --tags
+```
+
+> 提交身份当前是占位值（`JH <jh@users.noreply.github.com>`）。
+> 想换成自己的 GitHub 账号邮箱后再提交：
+> ```bash
+> git config user.name "你的名字"
+> git config user.email "你的邮箱"
+> git commit --amend --reset-author --no-edit
+> ```
 
 ## 项目结构
 
 ```
-L-workbuddy/
+.
 ├── index - new.html                 # 主文件：全部 HTML / CSS / JS（唯一交付物）
 ├── archive/                         # 历史版本快照（只增不删，可随时回退）
 ├── tests/                           # Node 原生测试（vm 沙箱跑真实页面代码）
@@ -88,7 +126,7 @@ L-workbuddy/
 ```bash
 node tools/check-all.mjs      # 全部检查（结构自检 + 7 组测试）
 node tools/verify.mjs         # 仅结构自检
-node --test tests/            # 仅测试（需显式列出 *.test.mjs）
+node --test tests/p2.test.mjs tests/p3.test.mjs tests/p4.test.mjs   # 单跑某组测试
 ```
 
 测试通过 `tests/harness.mjs` 把页面里的真实主脚本放进 `vm` 沙箱执行，配一套极简 DOM / localStorage 桩，
