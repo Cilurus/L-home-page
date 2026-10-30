@@ -47,19 +47,34 @@ python3 -m http.server 8080
 ### 1. GitHub Pages（推荐：给别人一个固定网址）
 
 > 本仓库已内置 `.github/workflows/pages.yml`：push 到 `main` 会自动发布到
-> **https://cilurus.github.io/L-home-page/**，首次运行会自动开启 Pages（`enablement: true`）。
-> 只想手动开也可以按下面三步做。
+> **https://cilurus.github.io/L-home-page/**。
+> 首次启用需要仓库管理员点两处（Actions 无法自举，会报 `Resource not accessible by integration`）：
+> 1. **Settings → Actions → General → Workflow permissions** 选 **Read and write permissions**
+> 2. **Settings → Pages → Build and deployment → Source** 选 **GitHub Actions**
+>
+> 之后到 **Actions → Deploy to GitHub Pages → Re-run all jobs** 即可，后续每次 push 自动更新。
 
-1. 把仓库推上 GitHub（见下一节），确保默认分支为 `main`
-2. 仓库 **Settings → Pages → Build and deployment**
+**不启用 Pages 也能马上分享的链接**（jsDelivr CDN 直读仓库文件，无需任何配置）：
+
+```
+https://cdn.jsdelivr.net/gh/Cilurus/L-home-page@main/index%20-%20new.html
+```
+
+直接下载单个文件：
+
+```
+https://raw.githubusercontent.com/Cilurus/L-home-page/main/index%20-%20new.html
+```
+
+手动开 Pages（不想用 Actions 时）：
+
+1. 仓库 **Settings → Pages → Build and deployment**
    - Source 选 **Deploy from a branch**
    - Branch 选 `main`，目录选 `/ (root)`，Save
-3. 等 1 分钟左右，访问 `https://<用户名>.github.io/<仓库名>/`
+2. 等 1 分钟左右，访问 `https://<用户名>.github.io/<仓库名>/`（仓库里已有 `index.html` 跳转页，可直接用根路径）
 
-> 由于文件名带空格，直接访问要写成 `.../index%20-%20new.html`。
-> 想用干净网址（`.../` 直接打开）就在仓库里加一个 `index.html`，内容有两种写法：
-> - 一行跳转：`<meta http-equiv="refresh" content="0; url=index%20-%20new.html">`
-> - 或者干脆把 `index - new.html` 改名为 `index.html`（记得同步改 `tests/harness.mjs`、`tools/verify.mjs` 里的文件名）
+> 由于主文件名带空格（`index - new.html`），直接访问它要写成 `.../index%20-%20new.html`。
+> 仓库根目录已放了一个约 1 KB 的 `index.html` 跳转页，所以站点根路径可以直接打开。
 
 ### 2. GitHub Releases（推荐：给别人"下载一个文件"）
 
