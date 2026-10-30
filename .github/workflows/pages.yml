@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+# 纯静态站点：把 index.html（跳转页）与主文件发布到 GitHub Pages。
+# 首次运行会自动开启 Pages（enablement: true），之后每次 push main 自动更新。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 准备发布目录（只放页面，不带 archive/tests）
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp "index - new.html" dist/
+          ls -l dist
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

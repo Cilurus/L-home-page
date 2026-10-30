@@ -46,6 +46,10 @@ python3 -m http.server 8080
 
 ### 1. GitHub Pages（推荐：给别人一个固定网址）
 
+> 本仓库已内置 `.github/workflows/pages.yml`：push 到 `main` 会自动发布到
+> **https://cilurus.github.io/L-home-page/**，首次运行会自动开启 Pages（`enablement: true`）。
+> 只想手动开也可以按下面三步做。
+
 1. 把仓库推上 GitHub（见下一节），确保默认分支为 `main`
 2. 仓库 **Settings → Pages → Build and deployment**
    - Source 选 **Deploy from a branch**
