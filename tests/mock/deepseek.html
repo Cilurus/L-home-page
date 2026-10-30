@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mock · DeepSeek 页面（用于离线验证扩展注入）</title>
+<style>
+  /* 只求"结构像"：左侧可滚动侧栏 + 中间可滚动消息区 + 底部输入区 */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    background: #1b1b1f; color: #e6e6e6;
+    font: 14px/1.6 -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  }
+  #app { display: flex; height: 100%; }
+  #sidebar {
+    width: 260px; flex: 0 0 260px; height: 100%; overflow-y: auto;
+    background: #15151a; border-right: 1px solid #2a2a32; padding: 12px;
+  }
+  #sidebar div { padding: 8px 10px; border-radius: 8px; color: #9a9aa8; }
+  #sidebar div:hover { background: #22222b; }
+  main { flex: 1; position: relative; }
+  #topbar {
+    position: absolute; top: 0; left: 0; right: 0; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; border-bottom: 1px solid #26262e;
+  }
+  #chatScroll {
+    position: absolute; top: 56px; bottom: 132px; left: 0; right: 0;
+    overflow-y: auto;
+  }
+  #chatInner { max-width: 768px; margin: 0 auto; padding: 18px; }
+  .msg { background: #23232c; border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
+  .msg.me { background: #2b3a67; }
+  #composer {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 132px;
+    padding: 16px; display: flex; gap: 10px; align-items: flex-end;
+    border-top: 1px solid #26262e;
+  }
+  #prompt {
+    flex: 1; height: 72px; resize: none; border-radius: 14px;
+    background: #23232c; color: #eee; border: 1px solid #33333f; padding: 12px; font: inherit;
+  }
+  #send { height: 40px; padding: 0 18px; border-radius: 10px; border: 0; background: #4D6BFE; color: #fff; font: inherit; cursor: pointer; }
+  #log { position: fixed; left: 8px; bottom: 8px; z-index: 10; font-size: 11px; color: #7f7; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div>新对话</div>
+    <div>今天</div>
+    <div>如何给网页做暗色主题</div>
+    <div>Shadow DOM 样式隔离</div>
+    <div>浏览器扩展 MV3 权限</div>
+    <div>CSS mask 挖洞可行性</div>
+    <div>更早</div>
+    <div>纯静态站点的部署方式</div>
+  </aside>
+  <main>
+    <div id="topbar"><span>DeepSeek</span><span id="avatar" style="width:32px;height:32px;border-radius:50%;background:#33333f"></span></div>
+    <div id="chatScroll">
+      <div id="chatInner">
+        <div class="msg">这是 mock 页面里的第一条回复，用来验证挖洞区域能否透出真实聊天内容。</div>
+        <div class="msg me">第二条：用户消息。</div>
+        <div class="msg">第三条：再补一些高度，让容器产生滚动条，好让测距逻辑能识别到它。</div>
+        <div class="msg">第四条：Shadow DOM 里定位 fixed 元素时，初始包含块仍是视口。</div>
+        <div class="msg me">第五条。</div>
+        <div class="msg">第六条：到这里总高度已经明显超过可视区域。</div>
+        <div class="msg">第七条：滚动条出现，<code>scrollHeight &gt; clientHeight</code> 成立。</div>
+        <div class="msg me">第八条。</div>
+        <div class="msg">第九条：最后一条。</div>
+      </div>
+    </div>
+    <div id="composer">
+      <textarea id="prompt" placeholder="给 DeepSeek 发送消息"></textarea>
+      <button id="send" aria-label="发送">发送</button>
+    </div>
+  </main>
+</div>
+<div id="log"></div>
+
+<script>
+  window.__sent = [];
+  document.getElementById('send').addEventListener('click', function () {
+    var v = document.getElementById('prompt').value;
+    window.__sent.push(v);
+    var el = document.createElement('div');
+    el.className = 'msg';
+    el.textContent = '收到：' + v;
+    document.getElementById('chatInner').appendChild(el);
+  });
+</script>
+
+<!-- 与扩展里加载顺序一致 -->
+<script src="../../extension/content/startpage-data.js"></script>
+<script src="../../extension/content/shell.js"></script>
+
+<script>
+/* 截图模式：?shot=start|page|ds */
+(function () {
+  var m = location.search.match(/[?&]shot=(\w+)/);
+  if (!m) return;
+  setTimeout(function () {
+    var h = document.getElementById('lsp-root-host');
+    var sr = h && h.shadowRoot;
+    if (!sr) return;
+    if (m[1] === 'page') sr.querySelector('.lsp-whale').click();
+    if (m[1] === 'ds') sr.querySelector('[data-lsp-engine]').click();
+  }, 400);
+})();
+
+/* 自动化验证：?auto=1 时按序执行并把结果写进 #log / document.title */
+(function () {
+  if (!/[?&]auto=1/.test(location.search)) return;
+
+  var out = { errors: [] };
+  window.addEventListener('error', function (e) {
+    out.errors.push(String(e.message || e.error));
+  });
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function shadow() {
+    var h = document.getElementById('lsp-root-host');
+    return h && h.shadowRoot;
+  }
+  function click(el) {
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true, cancelable: true }));
+  }
+
+  (async function () {
+    await sleep(500);
+    var h = document.getElementById('lsp-root-host');
+    var sr = shadow();
+    out.injected = !!sr;
+    if (!sr) { finish(); return; }
+
+    var clock = sr.getElementById('clock');
+    out.clock = clock ? clock.textContent.trim() : '';
+    out.bgVisible = getComputedStyle(sr.getElementById('bg')).display !== 'none';
+    out.whale = !!sr.querySelector('.lsp-whale');
+    out.dsOption = !!sr.querySelector('[data-lsp-engine]');
+
+    // 1. 点鲸鱼 → 收起
+    click(sr.querySelector('.lsp-whale'));
+    await sleep(200);
+    out.afterWhale = {
+      pageMode: h.classList.contains('lsp-page'),
+      fabShown: getComputedStyle(sr.querySelector('.lsp-fab')).display !== 'none'
+    };
+
+    // 2. 点 F → 展开
+    click(sr.querySelector('.lsp-fab'));
+    await sleep(200);
+    out.afterFab = { pageMode: h.classList.contains('lsp-page') };
+
+    // 3. 切换 deepseek 引擎
+    click(sr.querySelector('[data-lsp-engine]'));
+    await sleep(300);
+    var layoutErr = '';
+    try { window.__LSP__.layout(); } catch (e) { layoutErr = String(e && e.message || e); }
+    out.ds = {
+      hostDs: h.classList.contains('lsp-ds'),
+      holeW: h.style.getPropertyValue('--lsp-hw'),
+      holeH: h.style.getPropertyValue('--lsp-hh'),
+      placeholder: sr.getElementById('searchInput').placeholder,
+      searchTop: Math.round(sr.querySelector('.search-area').getBoundingClientRect().top),
+      frameShown: sr.querySelector('.lsp-frame').getBoundingClientRect().height > 100,
+      chatRect: window.__LSP__.measure(),
+      layoutErr: layoutErr
+    };
+
+    // 4. 输入并回车 → 应代填到 mock 的 textarea 并点发送
+    var input = sr.getElementById('searchInput');
+    input.value = '你好 DeepSeek';
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true, cancelable: true }));
+    await sleep(250);
+    out.send = {
+      sentCount: (window.__sent || []).length,
+      last: (window.__sent || [])[window.__sent.length - 1] || '',
+      inputCleared: input.value === ''
+    };
+
+    // 5. 切回搜索引擎 → 退出深聊
+    var g = Array.prototype.find.call(sr.querySelectorAll('.engine-dropdown .opt'), function (o) { return !o.dataset.lspEngine; });
+    click(g);
+    await sleep(200);
+    out.exitDs = { hostDs: h.classList.contains('lsp-ds') };
+
+    finish();
+  })();
+
+  function finish() {
+    document.getElementById('log').textContent = JSON.stringify(out, null, 1);
+    document.title = 'MOCK ' + JSON.stringify(out);
+    window.__lspResult = out;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2308 @@
+/* ------------------------------------------------------------------
+ * 自动生成，请勿手改。
+ * 来源：index - new.html   生成器：tools/build-extension.mjs
+ * 重新生成：node tools/build-extension.mjs
+ * ------------------------------------------------------------------ */
+self.__LSP_DATA__ = {
+  css: "\n/* ==========================================================================\n * 样式层结构（改样式先看这里）\n *   §A 设计令牌与全局重置  变量、字体、滚动条、toast 基础\n *   §B 布局骨架            #bg 背景、顶栏、主页、搜索区\n *   §C 组件                玻璃浮层、时钟、图形、格言、书签 Dock、弹窗\n *   §D 主题与显示模式      gray-text / black-text / custom-text / minimal / 响应式\n * 约定：颜色、圆角、模糊半径、时长、层级优先取 §A 变量，不写死数值。\n * ======================================================================== */\n  /* §A-1 设计令牌：颜色、时长、玻璃、层级都从这里取，别在业务规则里写死 */\n  :root {\n    /* 过渡时长 */\n    --tr-fast: background-color .2s, border-color .2s, transform .2s, opacity .2s, box-shadow .2s;\n    --dur-fast: .2s;\n    --dur-med: .25s;\n    --dur-slow: .6s;\n    /* 玻璃拟态 */\n    --glass-bg: rgba(255, 255, 255, var(--card-alpha, 0.04));\n    --glass-blur-1: 8px;\n    --glass-blur-2: 12px;\n    --glass-blur-3: 20px;\n    --glass-blur-4: 24px;\n    --glass-blur-5: 40px;\n    --glass-sat: 1.3;\n    --glass-sat-strong: 1.4;\n    --card-blur-mul: 0.889; /* 玻璃模糊倍率，由「模糊程度」滑块（1~10 档）驱动 */\n    /* 层级阶梯（数值与重构前逐一对应，仅换了写法） */\n    --z-menu: 10;            /* 搜索框下拉 */\n    --z-menu-2: 20;          /* 设置菜单 */\n    --z-overlay: 100;        /* 壁纸选择器遮罩 */\n    --z-popup: 200;          /* 表单类弹窗 */\n    --z-list: 250;           /* 收藏管理列表 */\n    --z-popup-strong: 300;   /* 格言弹窗 / 农历弹窗 */\n    --z-dock: 999;           /* 书签 Dock 与 tooltip */\n    --z-toast: 9999;         /* 提示条 */\n  }\n  * { margin: 0; padding: 0; box-sizing: border-box; }\n  :host { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; height: 100dvh; overflow: hidden; background: #0d0d1a; color: #e0e0e0; }\n  ::-webkit-scrollbar { width: 4px; }\n  ::-webkit-scrollbar-track { background: transparent; }\n  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }\n\n  #toast {\n    position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: var(--z-toast);\n    background: transparent; color: rgba(255,255,255,0.6);\n    padding: 8px 16px; font-size: 13px; display: none;\n    white-space: nowrap; pointer-events: none; max-width: 90vw; overflow: hidden; text-overflow: ellipsis;\n  }\n\n  #bg {\n    position: fixed; inset: 0;\n    background: linear-gradient(135deg, #0d0d1a, #1a0a2e, #0d1b2a);\n    background-size: 400% 400%;\n    animation: bgShift 16s ease infinite;\n    transition: background-image 0.8s ease;\n  }\n  #bg::before {\n    content: ''; position: absolute; inset: 0;\n    background: radial-gradient(circle at 30% 40%, rgba(255,0,150,0.08) 0%, transparent 50%),\n                radial-gradient(circle at 70% 60%, rgba(0,200,255,0.08) 0%, transparent 50%);\n    animation: bgPulse 8s ease-in-out infinite alternate;\n  }\n  @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }\n  @keyframes bgPulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }\n\n  #bg.bg-vivid {\n    background: linear-gradient(135deg, #1a0a2e, #4a154b, #ff6b6b, #ffd93d, #6bcb77);\n    background-size: 600% 600%;\n    animation: vividDrift 20s ease infinite;\n  }\n  #bg.bg-vivid::before {\n    background:\n      radial-gradient(ellipse 60% 40% at 30% 25%, rgba(255,107,107,0.35) 0%, transparent 60%),\n      radial-gradient(ellipse 50% 35% at 70% 35%, rgba(255,217,61,0.3) 0%, transparent 55%),\n      radial-gradient(ellipse 55% 40% at 45% 65%, rgba(107,203,119,0.25) 0%, transparent 55%),\n      radial-gradient(ellipse 45% 30% at 15% 55%, rgba(162,155,254,0.2) 0%, transparent 50%);\n    animation: auroraPulse 6s ease-in-out infinite alternate;\n  }\n  @keyframes vividDrift {\n    0% { background-position: 0% 50%; }\n    25% { background-position: 50% 0%; }\n    50% { background-position: 100% 50%; }\n    75% { background-position: 50% 100%; }\n    100% { background-position: 0% 50%; }\n  }\n  @keyframes auroraPulse {\n    0% { opacity: 0.4; }\n    50% { opacity: 0.8; }\n    100% { opacity: 0.4; }\n  }\n\n  #bg.bg-orca, #bg.bg-gray, #bg.bg-sunshine, #bg.bg-asteroid,\n  #bg.bg-rain, #bg.bg-firefly, #bg.bg-deepspace, #bg.bg-sky {\n    animation: none; background-size: auto;\n  }\n  #bg.bg-orca::before, #bg.bg-gray::before, #bg.bg-sunshine::before, #bg.bg-asteroid::before, #bg.bg-rain::before, #bg.bg-firefly::before, #bg.bg-deepspace::before, #bg.bg-sky::before { display: none; }\n  #bg.bg-orca { background: linear-gradient(to right, rgb(68, 160, 141), rgb(9, 54, 55)); }\n  #bg.bg-gray { background: linear-gradient(to right, rgb(189, 195, 199), rgb(44, 62, 80)); }\n  #bg.bg-sunshine { background: linear-gradient(to right, rgb(185, 43, 39), rgb(21, 101, 192)); }\n  #bg.bg-asteroid { background: linear-gradient(to right, rgb(15, 32, 39), rgb(32, 58, 67), rgb(44, 83, 100)); }\n  #bg.bg-rain { background: linear-gradient(to right, rgb(8, 18, 24), rgb(18, 36, 44), rgb(28, 55, 68)); }\n  #bg.bg-firefly { background: linear-gradient(to right, rgb(34, 80, 70), rgb(4, 27, 27)); }\n  #bg.bg-deepspace { background: linear-gradient(to right, rgb(0, 0, 0), rgb(67, 67, 67)); }\n  #bg.bg-sky { background: linear-gradient(to right, rgb(7, 101, 133), rgb(255, 255, 255)); }\n  /* ===== Homepage ===== */\n  #home {\n    position: fixed; inset: 0; z-index: 1;\n    display: flex; flex-direction: column; align-items: center;\n    transition: opacity 0.5s ease;\n  }\n  #home.hidden { opacity: 0; pointer-events: none; }\n\n  /* ===== Top Bar ===== */\n  .top-bar {\n    position: absolute; top: 0; left: 0; right: 0;\n    padding: 18px 24px;\n    display: flex; align-items: center; justify-content: flex-end;  /* V2.2 简化后只剩右侧齿轮，改为右对齐 */\n    z-index: 2;\n  }\n  \n  [data-tooltip] { position: relative; }\n  [data-tooltip]::after {\n    content: attr(data-tooltip);\n    position: absolute;\n    top: calc(100% + 8px);\n    left: 50%;\n    transform: translateX(-50%);\n    background: rgba(255,255,255,0.06);\n    backdrop-filter: blur(var(--glass-blur-2));\n    -webkit-backdrop-filter: blur(var(--glass-blur-2));\n    border: 1px solid rgba(255,255,255,0.08);\n    border-radius: 8px;\n    padding: 4px 10px;\n    font-size: 11px;\n    color: rgba(255,255,255,0.7);\n    white-space: nowrap;\n    pointer-events: none;\n    opacity: 0;\n    transition: opacity 0.15s ease;\n    transition-delay: 1s;\n    z-index: var(--z-dock);\n  }\n  [data-tooltip]:hover::after {\n    opacity: 1;\n    transition-delay: 1s;\n  }\n  [data-tooltip]:not(:hover)::after {\n    transition-delay: 0s;\n  }\n  :host(.popup-open) [data-tooltip]::after,\n  :host(.popup-open) [data-tooltip]:hover::after {\n    opacity: 0 !important;\n    transition-delay: 0s !important;\n  }\n\n  .top-right { display: flex; align-items: center; gap: 8px; }\n\n  .settings-btn {\n    width: 36px; height: 36px; border-radius: 8px;\n    background: rgba(255,255,255, var(--card-alpha, 0.04));\n    backdrop-filter: blur(calc(var(--glass-blur-2) * var(--card-blur-mul, 1)));\n    -webkit-backdrop-filter: blur(calc(var(--glass-blur-2) * var(--card-blur-mul, 1)));\n    border: 1.5px solid rgba(255,255,255,0.2);\n    color: rgba(255,255,255,0.5);\n    display: flex; align-items: center; justify-content: center;\n    cursor: pointer; font-size: 22px;\n    transition: background-color 0.35s, border-color 0.35s, transform 0.35s, opacity 0.35s, box-shadow 0.35s;\n    box-shadow: 0 4px 20px rgba(0,0,0,0.2);\n  }\n  .settings-btn:hover { box-shadow: inset 0 0 0 999px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.2); color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.1); }\n  .settings-btn .gear-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; transition: transform 0.35s ease; }\n  .settings-btn .gear-icon svg { width: 22px; height: 22px; }\n  .settings-btn:hover .gear-icon { transform: rotate(90deg); }\n\n  .settings-popup {\n    position: absolute; top: 62px; right: 16px; z-index: var(--z-menu-2);\n    background: rgba(255,255,255, var(--card-alpha, 0.04)); backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    -webkit-backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    border: 1.5px solid rgba(255,255,255,0.2);\n    border-radius: 14px; padding: 8px; width: 200px;\n    display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.2);\n  }\n  .settings-popup.show { display: block; animation: popIn 0.2s ease; }\n  @keyframes popIn { from { opacity: 0; transform: translateY(-6px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }\n  .settings-popup .item { padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 10px; transition: var(--tr-fast); }\n  .settings-popup .item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }\n  .settings-popup .item .icon { font-size: 14px; width: 20px; display: inline-flex; align-items: center; justify-content: center; }\n  .settings-popup .about-item {\n    flex-direction: column; align-items: stretch; gap: 0;\n    padding: 0;\n    transition: background-color 0.6s, border-color 0.6s, transform 0.6s, opacity 0.6s, box-shadow 0.6s; overflow: hidden;\n  }\n  .settings-popup .about-item .about-top { display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 14px; }\n  .settings-popup .about-item .about-expand {\n    max-height: 0; opacity: 0; overflow: hidden;\n    transition: max-height 0.25s ease-out, opacity 0.15s ease-out;\n    text-align: left; padding-left: 44px; font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.3);\n  }\n  .settings-popup .about-item:hover .about-expand { max-height: 120px; opacity: 1; transition: max-height 0.33s ease-out, opacity 0.22s ease-out; }\n  .settings-popup .wallpaper-item {\n    flex-direction: column; align-items: stretch; gap: 0;\n    padding: 0;\n    transition: background-color 0.6s, border-color 0.6s, transform 0.6s, opacity 0.6s, box-shadow 0.6s; overflow: hidden;\n  }\n  .settings-popup .wallpaper-item .wp-top { display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 14px; }\n  .settings-popup .wallpaper-item .wp-expand {\n    max-height: 0; opacity: 0; overflow: hidden;\n    transition: max-height 0.25s ease-out, opacity 0.15s ease-out;\n    display: flex; flex-direction: column;\n  }\n  .settings-popup .wallpaper-item:hover .wp-expand { max-height: 380px; opacity: 1; transition: max-height 0.95s ease-out, opacity 0.6s ease-out; }\n  #otherSettingsExpand:hover { max-height: 200px; opacity: 1; transition: max-height 0.45s ease-out, opacity 0.28s ease-out; }\n  .settings-popup .wp-opt {\n    padding: 8px 14px 8px 44px; font-size: 12px; color: rgba(255,255,255,0.3);\n    cursor: pointer; transition: var(--tr-fast); border-radius: 8px; margin: 0;\n    position: relative;\n  }\n  .settings-popup .wp-opt:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }\n  .settings-popup .wp-opt.active { color: rgba(255,255,255,0.7); }\n  .settings-popup .wp-opt.active::before { content: '\\25CF'; position: absolute; left: 28px; font-size: 10px; }\n  /* Toggle switch */\n  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px 8px 44px; font-size: 12px; color: rgba(255,255,255,0.4); }\n  .toggle-track { width: 28px; height: 16px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }\n  .toggle-track.on { background: rgba(100,180,255,0.4); }\n  .toggle-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.7); position: absolute; top: 2px; left: 2px; transition: left 0.2s; }\n  .toggle-track.on .toggle-dot { left: 14px; }\n  .custom-expand { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.2s ease-out; }\n  .custom-expand.show { max-height: 40px; opacity: 1; }\n  .custom-color-row { display: flex; align-items: center; gap: 6px; padding: 4px 14px 4px 44px; }\n  .custom-color-row input { flex: 1; width: 0; padding: 5px 8px; background: rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: rgba(255,255,255,0.7); font-size: 12px; outline: none; font-family: monospace; }\n  .color-preview { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; background: #FFFFFF; flex-shrink: 0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }\n  .color-preview:hover { border-color: rgba(255,255,255,0.3); }\n\n  /* ===== Semi-transparent glass popups ===== */\n  .popup {\n    position: fixed; z-index: var(--z-popup);\n    background: rgba(255,255,255, var(--card-alpha, 0.04));\n    backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    -webkit-backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    border: 1px solid rgba(255,255,255,0.08);\n    border-radius: 14px;\n    padding: 18px 20px;\n    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 48px rgba(0,0,0,0.3);\n    display: none;\n    transform: translateY(-8px) scale(0.95);\n    transition: opacity 0.4s ease, transform 0.4s ease;\n    color: rgba(255,255,255,0.85);\n    min-width: 280px;\n  }\n  .popup.show {\n    display: block;\n    opacity: 1;\n    transform: translateY(0) scale(1);\n    animation: popIn 0.25s ease;\n  }\n  .popup .title { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.92); margin-bottom: 12px; white-space: normal; word-break: break-word; }\n  .popup label { font-size: 12px; color: rgba(255,255,255,0.6); display: block; margin-bottom: 4px; margin-top: 12px; }\n  .popup label:first-of-type { margin-top: 0; }\n  .popup input, .popup select, .popup textarea {\n    width: 100%; padding: 9px 12px;\n    background: rgba(0,0,0,0.08);\n    border: 1px solid rgba(255,255,255,0.08);\n    border-radius: 8px; color: rgba(255,255,255,0.85); font-size: 13px; outline: none; font-family: inherit;\n    box-sizing: border-box;\n    box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);\n  }\n  .popup input:focus, .popup select:focus, .popup textarea:focus { border-color: rgba(255,255,255,0.15); }\n  .popup textarea { min-height: 50px; resize: vertical; }\n  .popup input::placeholder, .popup textarea::placeholder { color: rgba(255,255,255,0.5); }\n  .popup .hint { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; }\n  .popup .btn-row { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }\n  .popup .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 15px; font-weight: 700; letter-spacing: 1px; transition: var(--tr-fast); }\n  .popup .btn-primary { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }\n  .popup .btn-primary:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); }\n\n  /* ===== Preferences expand ===== */\n  .settings-popup .prefs-item {\n    flex-direction: column; align-items: stretch; gap: 0;\n    padding: 0;\n    transition: background-color 0.6s, border-color 0.6s, transform 0.6s, opacity 0.6s, box-shadow 0.6s; overflow: hidden;\n  }\n  .settings-popup .prefs-item .prefs-top { display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 14px; }\n  .settings-popup .prefs-item .prefs-expand {\n    max-height: 0; opacity: 0; overflow: hidden;\n    transition: max-height 0.25s ease-out, opacity 0.15s ease-out;\n    display: flex; flex-direction: column;\n  }\n  .settings-popup .prefs-item:hover .prefs-expand { max-height: 220px; opacity: 1; transition: max-height 0.6s ease-out, opacity 0.35s ease-out; }\n  .settings-popup .prefs-opt {\n    padding: 8px 14px 8px 44px; font-size: 12px; color: rgba(255,255,255,0.3);\n    cursor: pointer; transition: var(--tr-fast); border-radius: 8px; margin: 1px 0;\n    position: relative;\n  }\n  .settings-popup .prefs-opt:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }\n  .settings-popup .prefs-opt.active { color: rgba(255,255,255,0.7); }\n  .settings-popup .prefs-opt.active::before { content: '\\25CF'; position: absolute; left: 28px; font-size: 10px; }\n\n  /* ===== Font Color ===== */\n  .settings-popup .color-item {\n    flex-direction: column; align-items: stretch; gap: 0;\n    padding: 0;\n    transition: background-color 0.6s, border-color 0.6s, transform 0.6s, opacity 0.6s, box-shadow 0.6s; overflow: hidden;\n  }\n  .settings-popup .color-item .color-top { display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 14px; }\n  .settings-popup .color-item .color-expand {\n    max-height: 0; opacity: 0; overflow: hidden;\n    transition: max-height 0.25s ease-out, opacity 0.15s ease-out;\n    display: flex; flex-direction: column;\n  }\n  .settings-popup .color-item:hover .color-expand { max-height: 250px; opacity: 1; transition: max-height 0.6s ease-out, opacity 0.4s ease-out; }\n  .settings-popup .color-opt {\n    padding: 8px 14px 8px 44px; font-size: 12px; color: rgba(255,255,255,0.3);\n    cursor: pointer; transition: var(--tr-fast); border-radius: 8px; margin: 1px 0;\n    position: relative;\n  }\n  .settings-popup .color-opt:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }\n  /* Active option dot */\n  .color-opt.active::before { content: '\\25CF'; position: absolute; left: 28px; font-size: 10px; }\n\n  /* Button shadows */\n  .btn-cancel { box-shadow: 0 0 10px rgba(0,0,0,0.25); }\n  .btn-cancel:hover { box-shadow: 0 0 16px rgba(0,0,0,0.4); }\n  .btn-save { box-shadow: 0 0 10px rgba(0,0,0,0.25); }\n  .btn-save:hover { box-shadow: 0 0 16px rgba(0,0,0,0.4); }\n\n  /* ===== Opacity Slider ===== */\n  .settings-popup .slider-item {\n    flex-direction: column; align-items: stretch; gap: 0;\n    padding: 0;\n    transition: background-color 0.6s, border-color 0.6s, transform 0.6s, opacity 0.6s, box-shadow 0.6s; overflow: hidden;\n  }\n  .settings-popup .slider-item .opacity-top { display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 14px; }\n  .settings-popup .slider-item .opacity-expand {\n    max-height: 0; opacity: 0; overflow: hidden;\n    transition: max-height 0.25s ease-out, opacity 0.15s ease-out;\n    padding: 0 14px;\n  }\n  .settings-popup .slider-item:hover .opacity-expand { max-height: 60px; opacity: 1; overflow: visible; transition: max-height 0.2s ease-out, opacity 0.15s ease-out; }\n  .slider-wrap { position: relative; height: 30px; }\n  #opacitySlider, #blurSlider {\n    -webkit-appearance: none; appearance: none;\n    position: absolute; top: 50%; left: 0; right: 0;\n    transform: translateY(-50%);\n    width: 100%; height: 10px; margin: 0;\n    border-radius: 5px; outline: none;\n    box-shadow: 0 2px 6px rgba(0,0,0,0.2);\n    z-index: 1;\n  }\n  #opacitySlider::-webkit-slider-thumb, #blurSlider::-webkit-slider-thumb {\n    -webkit-appearance: none; appearance: none;\n    width: 20px; height: 20px; border-radius: 50%;\n    background: rgba(255,255,255,0.9); cursor: pointer;\n    border: 1.5px solid rgba(140,140,140,0.7);\n    box-shadow: 0 2px 6px rgba(0,0,0,0.2);\n  }\n  #opacitySlider::-moz-range-thumb, #blurSlider::-moz-range-thumb {\n    width: 20px; height: 20px; border-radius: 50%;\n    background: rgba(255,255,255,0.9); cursor: pointer;\n    border: 1.5px solid rgba(140,140,140,0.7);\n    box-shadow: 0 2px 6px rgba(0,0,0,0.2);\n  }\n  .slider-dots { position: absolute; top: 50%; left: 10px; right: 10px; transform: translateY(-50%); display: flex; justify-content: space-between; pointer-events: none; z-index: 0; }\n  .slider-dots i { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.2); display: block; }\n  .slider-val {\n    /* left 由 JS 用 calc() 按档位写入（百分比定位，不依赖 offsetWidth 测量） */\n    position: absolute; top: 50%; left: 0; transform: translateY(-50%); z-index: 2; pointer-events: none;\n    font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.55);\n    width: 20px; text-align: center; line-height: 1;\n  }\n\n  /* §D-1 主题令牌：两套手抄规则（各 76 条）合并而来，改主题只需改这里的变量 */\n  :host(.gray-text)  { --fg-1: rgba(100,100,100,0.85); --fg-2: rgba(100,100,100,0.6); --fg-3: rgba(100,100,100,0.85); --fg-4: rgba(100,100,100,0.35); --fg-5: rgba(100,100,100,0.3); --fg-6: rgba(100,100,100,0.6); --fg-7: rgba(100,100,100,0.5); --fg-8: rgba(100,100,100,0.7); --fg-9: rgba(100,100,100,0.8); --fg-10: rgba(100,100,100,0.85); --fg-11: inset 0 0 0 999px rgba(255,255,255,0.12), 0 4px 20px rgba(0,0,0,0.2); --fg-12: inset 0 0 0 999px rgba(255,255,255,0.12), 0 4px 20px rgba(0,0,0,0.18); --fg-13: rgba(100,100,100,0.7); --fg-14: rgba(100,100,100,0.45); --fg-15: rgba(100,100,100,0.9); --fg-16: rgba(100,100,100,0.4); --fg-17: rgba(190,90,80,0.5); --fg-18: rgba(190,90,80,0.8); --fg-19: rgba(100,100,100,0.08); --fg-20: rgba(100,100,100,0.1); --fg-21: rgba(100,100,100,0.6); --fg-22: rgba(100,100,100,0.5); --fg-23: rgba(100,100,100,0.12); }\n  :host(.black-text) { --fg-1: rgba(0,0,0,0.7); --fg-2: rgba(0,0,0,0.4); --fg-3: rgba(0,0,0,0.9); --fg-4: rgba(0,0,0,0.35); --fg-5: rgba(0,0,0,0.3); --fg-6: rgba(0,0,0,0.6); --fg-7: rgba(0,0,0,0.5); --fg-8: rgba(0,0,0,0.8); --fg-9: rgba(0,0,0,0.8); --fg-10: rgba(0,0,0,0.85); --fg-11: inset 0 0 0 999px rgba(255,255,255,0.15), 0 4px 20px rgba(0,0,0,0.2); --fg-12: inset 0 0 0 999px rgba(255,255,255,0.15), 0 4px 20px rgba(0,0,0,0.18); --fg-13: rgba(0,0,0,0.7); --fg-14: rgba(0,0,0,0.5); --fg-15: rgba(0,0,0,0.9); --fg-16: rgba(0,0,0,0.4); --fg-17: rgba(170,50,40,0.5); --fg-18: rgba(170,50,40,0.8); --fg-19: rgba(0,0,0,0.08); --fg-20: rgba(0,0,0,0.1); --fg-21: rgba(0,0,0,0.7); --fg-22: rgba(0,0,0,0.6); --fg-23: rgba(0,0,0,0.12); }\n  /* §D-2 合并后的规则：同一份选择器在两种主题下各取自己的 --fg-* */\n  :host(.gray-text) .clock, :host(.black-text) .clock { color: var(--fg-1); }\n  :host(.gray-text) #motto, :host(.black-text) #motto { color: var(--fg-2); }\n  :host(.gray-text) .popup, :host(.black-text) .popup { color: var(--fg-3); }\n  :host(.gray-text) .search-input, :host(.black-text) .search-input { color: var(--fg-3); }\n  :host(.gray-text) .search-input::placeholder, :host(.black-text) .search-input::placeholder { color: var(--fg-4); }\n  :host(.gray-text) .search-btn, :host(.black-text) .search-btn { color: var(--fg-5); }\n  :host(.gray-text) .engine-btn, :host(.black-text) .engine-btn { color: var(--fg-4); }\n  :host(.gray-text) .engine-btn:hover, :host(.black-text) .engine-btn:hover { color: var(--fg-6); }\n  :host(.gray-text) .engine-dropdown .opt, :host(.black-text) .engine-dropdown .opt { color: var(--fg-7); }\n  :host(.gray-text) .engine-dropdown .opt:hover, :host(.black-text) .engine-dropdown .opt:hover { color: var(--fg-8); }\n  :host(.gray-text) .engine-dropdown .opt.active, :host(.black-text) .engine-dropdown .opt.active { color: var(--fg-9); }\n  :host(.gray-text) .settings-btn, :host(.black-text) .settings-btn { color: var(--fg-7); }\n  :host(.gray-text) .settings-btn:hover, :host(.black-text) .settings-btn:hover { box-shadow: var(--fg-11); }\n  :host(.gray-text) .settings-popup .item, :host(.black-text) .settings-popup .item { color: var(--fg-7); }\n  :host(.gray-text) .settings-popup .item:hover, :host(.black-text) .settings-popup .item:hover { color: var(--fg-8); }\n  :host(.gray-text) .popup .title, :host(.black-text) .popup .title { color: var(--fg-15); }\n  :host(.gray-text) .popup label, :host(.black-text) .popup label { color: var(--fg-6); }\n  :host(.gray-text) #bmPopup .back-text, :host(.black-text) #bmPopup .back-text { color: var(--fg-7); }\n  :host(.gray-text) #bmPopup .back-text:hover, :host(.black-text) #bmPopup .back-text:hover { color: var(--fg-13); }\n  :host(.gray-text) #bmPopup .icon-btn, :host(.black-text) #bmPopup .icon-btn { color: var(--fg-13); }\n  :host(.gray-text) #bmPopup .bm-add-btn, :host(.black-text) #bmPopup .bm-add-btn { color: var(--fg-13); }\n  :host(.gray-text) #bmPopup .icon-btn:hover, :host(.black-text) #bmPopup .icon-btn:hover { color: var(--fg-9); }\n  :host(.gray-text) #bmPopup .bm-add-btn:hover, :host(.black-text) #bmPopup .bm-add-btn:hover { color: var(--fg-9); }\n  :host(.gray-text) #bmPopup .icon-btn .ib-status, :host(.black-text) #bmPopup .icon-btn .ib-status { color: var(--fg-7); }\n  :host(.gray-text) #bmPopup .icon-btn .ib-arrow, :host(.black-text) #bmPopup .icon-btn .ib-arrow { color: var(--fg-5); }\n  :host(.gray-text) #bmPopup .bm-icon-preview, :host(.black-text) #bmPopup .bm-icon-preview { color: var(--fg-16); }\n  :host(.gray-text) #bmPopup .bm-icon-preview.has-icon, :host(.black-text) #bmPopup .bm-icon-preview.has-icon { color: var(--fg-13); }\n  :host(.gray-text) #bmPopup .bm-del-header, :host(.black-text) #bmPopup .bm-del-header { color: var(--fg-17); }\n  :host(.gray-text) #bmPopup .bm-del-header:hover, :host(.black-text) #bmPopup .bm-del-header:hover { color: var(--fg-18); }\n  :host(.gray-text) .bm-list-popup, :host(.black-text) .bm-list-popup { color: var(--fg-3); }\n  :host(.gray-text) .bm-list-popup .title, :host(.black-text) .bm-list-popup .title { color: var(--fg-15); }\n  :host(.gray-text) .bm-list-item .bm-li-name, :host(.black-text) .bm-list-item .bm-li-name { color: var(--fg-9); }\n  :host(.gray-text) .bm-list-empty, :host(.black-text) .bm-list-empty { color: var(--fg-16); }\n  :host(.gray-text) .bm-list-add, :host(.black-text) .bm-list-add { color: var(--fg-13); }\n  :host(.gray-text) .bm-list-add:hover, :host(.black-text) .bm-list-add:hover { color: var(--fg-9); }\n  :host(.gray-text) #lunarGanzhi, :host(.black-text) #lunarGanzhi { color: var(--fg-13); }\n  :host(.gray-text) #lunarDate, :host(.black-text) #lunarDate { color: var(--fg-13); }\n  :host(.gray-text) #lunarHour, :host(.black-text) #lunarHour { color: var(--fg-7); }\n  :host(.gray-text) .settings-popup .prefs-opt, :host(.black-text) .settings-popup .prefs-opt { color: var(--fg-16); }\n  :host(.gray-text) .settings-popup .prefs-opt:hover, :host(.black-text) .settings-popup .prefs-opt:hover { color: var(--fg-6); }\n  :host(.gray-text) .settings-popup .prefs-opt.active, :host(.black-text) .settings-popup .prefs-opt.active { color: var(--fg-13); }\n  :host(.gray-text) .settings-popup .color-opt, :host(.black-text) .settings-popup .color-opt { color: var(--fg-16); }\n  :host(.gray-text) .settings-popup .color-opt:hover, :host(.black-text) .settings-popup .color-opt:hover { color: var(--fg-6); }\n  :host(.gray-text) .settings-popup .color-opt.active, :host(.black-text) .settings-popup .color-opt.active { color: var(--fg-13); }\n  :host(.gray-text) .settings-popup .wp-opt, :host(.black-text) .settings-popup .wp-opt { color: var(--fg-16); }\n  :host(.gray-text) .settings-popup .wp-opt:hover, :host(.black-text) .settings-popup .wp-opt:hover { color: var(--fg-6); }\n  :host(.gray-text) .settings-popup .wp-opt.active, :host(.black-text) .settings-popup .wp-opt.active { color: var(--fg-13); }\n  :host(.gray-text) .prefs-divider, :host(.black-text) .prefs-divider { background: var(--fg-19); }\n  :host(.gray-text) .toggle-row, :host(.black-text) .toggle-row { color: var(--fg-7); }\n  :host(.gray-text) .custom-color-row input, :host(.black-text) .custom-color-row input { color: var(--fg-13); }\n  :host(.gray-text) .wp-pick-opt, :host(.black-text) .wp-pick-opt { color: var(--fg-7); }\n  :host(.gray-text) .wp-pick-opt.active, :host(.black-text) .wp-pick-opt.active { color: var(--fg-13); }\n  :host(.gray-text) .wp-picker .title, :host(.black-text) .wp-picker .title { color: var(--fg-7); }\n  :host(.gray-text) .wp-picker .prefs-divider, :host(.black-text) .wp-picker .prefs-divider { background: var(--fg-19); }\n  :host(.gray-text) .settings-popup .about-top, :host(.black-text) .settings-popup .about-top { color: var(--fg-7); }\n  :host(.gray-text) .settings-popup .about-expand, :host(.black-text) .settings-popup .about-expand { color: var(--fg-16); }\n  :host(.gray-text) [data-tooltip]::after, :host(.black-text) [data-tooltip]::after { color: var(--fg-9); background: rgba(200,200,200,0.5); border-color: var(--fg-20); }\n  :host(.gray-text) .bookmark-bar .bm-slot .bm-label, :host(.black-text) .bookmark-bar .bm-slot .bm-label { color: var(--fg-21); }\n  :host(.gray-text) .bookmark-bar .bm-slot .bm-icon, :host(.black-text) .bookmark-bar .bm-slot .bm-icon { color: var(--fg-22); }\n  :host(.gray-text) .popup input, :host(.black-text) .popup input { color: var(--fg-3); }\n  :host(.gray-text) .popup select, :host(.black-text) .popup select { color: var(--fg-3); }\n  :host(.gray-text) .popup textarea, :host(.black-text) .popup textarea { color: var(--fg-3); }\n  :host(.gray-text) .popup input::placeholder, :host(.black-text) .popup input::placeholder { color: var(--fg-7); }\n  :host(.gray-text) .popup textarea::placeholder, :host(.black-text) .popup textarea::placeholder { color: var(--fg-7); }\n  :host(.gray-text) .popup .hint, :host(.black-text) .popup .hint { color: var(--fg-7); }\n  :host(.gray-text) .popup .btn-primary, :host(.black-text) .popup .btn-primary { color: var(--fg-9); }\n\n\n  :host(.custom-text), :host(.custom-text) body { color: var(--custom-text-color); }\n  :host(.custom-text) .popup, :host(.custom-text) .search-input, :host(.custom-text) .settings-popup .item,\n  :host(.custom-text) .popup .title, :host(.custom-text) .popup input, :host(.custom-text) .popup textarea,\n  :host(.custom-text) .popup label, :host(.custom-text) .popup .hint, :host(.custom-text) .motto,\n  :host(.custom-text) .popup .btn-primary,\n  :host(.custom-text) .settings-popup .prefs-opt, :host(.custom-text) .settings-popup .color-opt,\n  :host(.custom-text) .settings-popup .wp-opt, :host(.custom-text) .settings-btn,\n  :host(.custom-text) .clock, :host(.custom-text) #motto, :host(.custom-text) .engine-btn,\n  :host(.custom-text) .search-btn, :host(.custom-text) .toggle-row,\n  :host(.custom-text) .bm-list-popup,\n  :host(.custom-text) #bmPopup .back-text, :host(.custom-text) #bmPopup .icon-btn,\n  :host(.custom-text) #bmPopup .bm-add-btn, :host(.custom-text) #bmPopup .icon-btn .ib-status,\n  :host(.custom-text) #bmPopup .icon-btn .ib-arrow, :host(.custom-text) #bmPopup .bm-icon-preview,\n  :host(.custom-text) #bmPopup .bm-del-header { color: var(--custom-text-color); }\n  :host(.custom-text) #bmPopup .back-text:hover, :host(.custom-text) #bmPopup .icon-btn:hover,\n  :host(.custom-text) #bmPopup .bm-add-btn:hover, :host(.custom-text) #bmPopup .bm-del-header:hover { color: var(--custom-text-color); }\n  :host(.custom-text) .bm-list-item .bm-li-name, :host(.custom-text) .bm-list-empty,\n  :host(.custom-text) .bm-list-add, :host(.custom-text) .bm-list-add:hover,\n  :host(.custom-text) #lunarGanzhi, :host(.custom-text) #lunarDate, :host(.custom-text) #lunarHour { color: var(--custom-text-color); }\n  :host(.custom-text) .wp-pick-opt { color: var(--custom-text-color); }\n  :host(.custom-text) .wp-picker .title { color: var(--custom-text-color); }\n  :host(.custom-text) .wp-picker .prefs-divider { background: var(--custom-text-color); opacity: 0.15; }\n  :host(.custom-text) .custom-color-row input { color: var(--custom-text-color); }\n  /* 补齐：此前的 gray/black 主题有覆盖，自定义颜色主题漏了 */\n  :host(.custom-text) .search-input::placeholder, :host(.custom-text) [data-tooltip]::after,\n  :host(.custom-text) .bookmark-bar .bm-slot .bm-label { color: var(--custom-text-color); }\n\n  /* ===== Clock ===== */\n  .clock {\n    position: absolute; top: calc(24% - 28px); left: 50%; transform: translate(-50%, -50%);\n    z-index: 2;\n    font-family: 'Microsoft YaHei', '微软雅黑', 'PingFang SC', sans-serif;\n    font-size: 56px;\n    color: rgba(255,255,255,0.7);\n    letter-spacing: 3px;\n    font-weight: 900;\n    user-select: none;\n    cursor: pointer;\n    transition: color 0.3s;\n    opacity: calc((var(--card-alpha, 0.04) - 0.03) / 0.87 * 0.5 + 0.5);\n  }\n  .clock:hover { color: rgba(255,255,255,0.65); }\n  .clock::after {\n    content: attr(data-date);\n    position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);\n    font-size: 14px; font-weight: 400; letter-spacing: 1px;\n    color: rgba(255,255,255,0.5); white-space: nowrap;\n    opacity: 0; transition: opacity 0.3s ease;\n    transition-delay: 0.8s;\n  }\n  .clock:hover::after { opacity: 1; transition-delay: 0.8s; }\n  .clock:not(:hover)::after { transition-delay: 0s; }\n\n  /* ===== Search ===== */\n  .search-area {\n    position: absolute; top: 33%; left: 50%; transform: translate(-50%, -50%) scale(1);\n    width: 100%; max-width: 600px; padding: 0 20px; z-index: 2;\n    will-change: transform; transition: transform 0.3s ease;\n  }\n  .search-area:hover { transform: translate(-50%, -50%) scale(1.1); }\n  .search-wrap {\n    display: flex; align-items: center;\n    background: rgba(255,255,255, var(--card-alpha, 0.04)); backdrop-filter: blur(calc(var(--glass-blur-2) * var(--card-blur-mul, 1)));-webkit-backdrop-filter: blur(calc(var(--glass-blur-2) * var(--card-blur-mul, 1)));\n    border: 1.5px solid rgba(255,255,255,0.2); border-radius: 16px;\n    transition: border-color 0.3s, background 0.3s;\n    box-shadow: 0 4px 24px var(--search-shadow, rgba(0,0,0,0.15));\n  }\n  .search-wrap:focus-within { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); box-shadow: 0 0 0 3px rgba(120,150,255,0.35); }\n  /* 从 HTML 内联样式移入（P6）：初始值集中在这里 */\n  #rainCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; display: none; }\n  .search-wrap { --search-shadow: rgba(0,120,212,0.35); }\n  #lunarPopup { position: fixed; z-index: var(--z-popup-strong); width: 220px; text-align: center; padding: 14px; }\n\n  /* §A-2 键盘可达：所有可交互元素都要有可见焦点（原来大量 outline:none 无替代） */\n  :focus-visible { outline: 2px solid rgba(140,170,255,0.9); outline-offset: 2px; }\n  :host(.gray-text) :focus-visible { outline-color: rgba(80,80,80,0.9); }\n  :host(.black-text) :focus-visible { outline-color: rgba(0,0,0,0.8); }\n  .engine-btn {\n    padding: 12px 14px 12px 18px; background: none; border: none; border-right: 1px solid rgba(255,255,255,0.04);\n    color: rgba(255,255,255,0.35); cursor: pointer; font-size: 14px;\n    display: flex; align-items: center; gap: 6px; transition: color 0.2s; white-space: nowrap; position: relative;\n  }\n  .engine-btn:hover { color: rgba(255,255,255,0.6); }\n  .engine-dropdown {\n    position: absolute; z-index: var(--z-menu);\n    background: rgba(255,255,255, var(--card-alpha, 0.04)); backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    -webkit-backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 4px; width: 140px;\n    display: none; box-shadow: 0 12px 36px rgba(0,0,0,0.4);\n  }\n  .engine-dropdown.show { display: block; animation: popIn 0.2s ease; }\n  .engine-dropdown .opt { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; color: rgba(255,255,255,0.5); transition: var(--tr-fast); }\n  .engine-dropdown .opt:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }\n  .engine-dropdown .opt.active { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.04); }\n  .search-input { flex: 1; padding: 12px 16px; background: transparent; border: none; outline: none; color: rgba(255,255,255,0.7); font-size: 14px; font-family: inherit; }\n  .search-input::placeholder { color: rgba(255,255,255,0.35); }\n  .search-btn { padding: 12px 18px; background: none; border: none; border-left: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.3); cursor: pointer; font-size: 16px; transition: color 0.2s; }\n\t  .eng-icon {\n\t    display: inline-flex; align-items: center; justify-content: center;\n\t    width: 22px; height: 22px; border-radius: 50%;\n\t    background: rgba(255,255,255,0.04); backdrop-filter: blur(var(--glass-blur-1));-webkit-backdrop-filter: blur(var(--glass-blur-1));\n\t    border: 1px solid rgba(255,255,255,0.08);\n\t    font-size: 12px; font-weight: 700; margin-right: 4px;\n\t    color: var(--ec);\n\t  }\n\t  #engineLabel.eng-icon { width: 24px; height: 24px; font-size: 13px; margin-right: 0; }\n  .search-btn:hover { color: rgba(255,255,255,0.6); }\n\n  /* ===== Motto ===== */\n  .motto {\n    position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);\n    z-index: 2;\n    font-size: 16px;\n    color: rgba(255,255,255,0.5);\n    transition: bottom 0.3s ease, color 0.3s;\n    text-align: center;\n    max-width: 80%;\n    padding: 6px 14px;\n    border-radius: 8px;\n    user-select: none;\n    line-height: 1.6;\n  }\n  .motto:hover { color: rgba(255,255,255,0.35); }\n  .motto.up { bottom: calc(10% + 33px); }\n  #mottoPopup { position: fixed; top: 50%; left: 50%; z-index: var(--z-popup-strong); transition: opacity 0.3s ease; }\n  #mottoPopup, #mottoPopup.popup.show { transform: translate(-50%, -50%) scale(1); }\n\n\n\n\n  /* ===== Responsive ===== */\n  @media (max-width: 500px) {\n    .top-bar { padding: 14px 16px; }\n    .settings-popup { right: 8px; width: 180px; }\n    .clock { font-size: 40px; }\n    .search-area { max-width: 420px; }\n    .motto { font-size: 12px; max-width: 90%; }\n    .settings-btn { width: 32px; height: 32px; }\n    .gear-icon svg, .settings-btn .gear-icon { width: 18px; height: 18px; }\n    .popup, #bmPopup, .bm-list-popup { min-width: 260px; max-width: 90vw; }\n    #mottoPopup { min-width: 280px !important; }\n    .wp-picker { width: 170px; }\n  }\n  @media (min-width: 1600px) {\n    .clock { font-size: 64px; }\n    .search-area { max-width: 740px; }\n    .motto { font-size: 18px; }\n  }\n  @media (max-height: 600px) {\n    .clock { top: calc(18% - 20px); font-size: 36px; }\n      .search-area { top: 28%; }\n    .motto { bottom: 4%; }\n  }\n\n  /* ===== Bookmark Bar (macOS Dock style) ===== */\n  .bookmark-bar {\n    position: fixed; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; z-index: var(--z-dock);\n    display: none; justify-content: center; pointer-events: none;\n  }\n  .bookmark-bar.show { display: flex; }\n  .bookmark-bar .bm-inner {\n    background: rgba(255,255,255, var(--card-alpha, 0.04)); backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    -webkit-backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    border: 1px solid rgba(255,255,255,0.08);\n    border-radius: 16px;\n    padding: 10px 14px;\n    display: flex; align-items: center; gap: 6px;\n    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 24px rgba(0,0,0,0.15);\n    pointer-events: auto;\n    animation: bmUp 0.3s ease;\n    overflow: visible;\n    transition: padding 0.2s ease;\n  }\n  @keyframes bmUp {\n    from { transform: translateY(30px); opacity: 0; }\n    to { transform: translateY(0); opacity: 1; }\n  }\n  @keyframes bmDown {\n    from { transform: translateY(0); opacity: 1; }\n    to { transform: translateY(30px); opacity: 0; }\n  }\n  .bookmark-bar.anim-out .bm-inner {\n    animation: bmDown 0.3s ease forwards;\n  }\n  .bookmark-bar.anim-out-slow .bm-inner {\n    animation-duration: 0.6s;\n  }\n  .bookmark-bar .bm-slot {\n    width: 44px; height: 44px; border-radius: 10px;\n    background: rgba(255,255,255, var(--card-alpha, 0.03));\n    border: 1px solid rgba(255,255,255,0.12);\n    display: flex; align-items: center; justify-content: center;\n    cursor: pointer; position: relative; overflow: hidden;\n    transition: transform 0.12s ease, margin 0.12s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;\n    transform-origin: center bottom;\n    box-shadow: 0 4px 20px rgba(0,0,0,0.2);\n  }\n  .bookmark-bar .bm-slot .bm-icon {\n    width: 33px; height: 33px; position: relative;\n    display: flex; align-items: center; justify-content: center;\n    font-size: 24px; color: #fff;\n    pointer-events: none;\n  }\n  .bookmark-bar .bm-slot .bm-icon img { width: 24px; height: 24px; border-radius: 3px; object-fit: cover; }\n  .bookmark-bar .bm-slot.has-link { border-style: solid; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255, var(--card-alpha, 0.04)); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }\n  .bookmark-bar .bm-slot.has-link .bm-icon { color: rgba(255,255,255,0.5); }\n  .bookmark-bar .bm-slot:active { background: rgba(255,255,255,0.1); }\n  .bookmark-bar .bm-inner.expanded { padding: 10px 24px; }\n  .bookmark-bar .bm-more-slot { border-style: solid; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255, var(--card-alpha, 0.04)); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }\n  .bookmark-bar .bm-more-slot .bm-icon { color: rgba(255,255,255,0.5); line-height:1; display:flex; align-items:center; justify-content:center; }\n  .bookmark-bar.detailed .bm-slot.has-link { flex-direction: column; }\n  .bookmark-bar.detailed .bm-slot.has-link .bm-icon { margin-top: -6px; }\n  .bookmark-bar.detailed .bm-slot .bm-label {\n    font-size: 8px; color: rgba(255,255,255,0.4);\n    width: 100%; white-space: nowrap; overflow: hidden;\n    text-overflow: ellipsis; text-align: center;\n    line-height: 1; padding: 1px 2px 0; margin-top: -2px; pointer-events: none;\n  }\n  .prefs-divider {\n    height: 1px; background: rgba(255,255,255,0.08); margin: 4px 14px;\n  }\n\n  /* ===== Bookmark list popup ===== */\n  .bm-list-popup {\n    position: fixed; top: 50%; left: 50%; z-index: var(--z-list);\n    transform: translate(-50%, -50%) scale(0.95);\n    background: rgba(255,255,255, var(--card-alpha, 0.04));\n    backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    -webkit-backdrop-filter: blur(calc(var(--glass-blur-3) * var(--card-blur-mul, 1))) saturate(1.3);\n    border: 1px solid rgba(255,255,255,0.08);\n    border-radius: 14px;\n    padding: 18px 20px;\n    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 48px rgba(0,0,0,0.3);\n    display: none;\n    color: rgba(255,255,255,0.85);\n    width: 360px;\n    max-height: 480px;\n  }\n  .bm-list-popup.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); animation: bmListPopIn 0.25s ease; }\n  .bm-list-popup .title { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.92); margin-bottom: 12px; }\n  .bm-list-wrap {\n    max-height: 320px; overflow-y: auto;\n    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;\n  }\n  .bm-list-wrap::-webkit-scrollbar { width: 4px; }\n  .bm-list-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }\n  .bm-list-item {\n    display: flex; align-items: center; gap: 8px;\n    padding: 8px 8px; border-radius: 8px;\n    cursor: pointer; transition: background 0.15s;\n  }\n  .bm-list-item:hover { background: rgba(255,255,255,0.04); }\n  .bm-list-item + .bm-list-item { border-top: 1px solid rgba(255,255,255,0.03); }\n  .bm-list-item { cursor: grab; }\n  .bm-list-item.dragging { opacity: 0.45; cursor: grabbing; }\n  .bm-list-item.drag-target { background: rgba(255,255,255,0.1); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22); }\n  .bm-list-hint { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.3); margin-left: 6px; }\n  .bm-list-item .bm-li-icon {\n    width: 22px; height: 22px; border-radius: 50%; position: relative;\n    display: flex; align-items: center; justify-content: center;\n    font-size: 12px; flex-shrink: 0;\n    background: rgba(255,255,255,0.06);\n  }\n  .bm-list-item .bm-li-icon img { width: 14px; height: 14px; border-radius: 50%; object-fit: contain; }\n  .bm-list-item .bm-li-name { font-size: 13px; color: rgba(255,255,255,0.8); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n  .bm-list-item .bm-li-del {\n    width: 24px; height: 24px; border-radius: 6px; border: none;\n    background: transparent; color: rgba(255,255,255,0.25);\n    cursor: pointer; font-size: 14px; flex-shrink: 0;\n    display: flex; align-items: center; justify-content: center;\n    transition: background 0.15s, color 0.15s;\n  }\n  .bm-list-item .bm-li-del:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }\n  .bm-list-empty { text-align: center; padding: 20px 0; font-size: 13px; color: rgba(255,255,255,0.3); }\n  .bm-list-add {\n    width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; border: none;\n    background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); cursor: pointer; font-size: 14px; font-weight: 700; letter-spacing: 2px;\n    box-shadow: 0 0 10px rgba(0,0,0,0.25);\n    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;\n  }\n  .bm-list-add:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); box-shadow: 0 0 16px rgba(0,0,0,0.4); }\n\n  #lunarGanzhi, #lunarDate { color: rgba(255,255,255,0.7); }\n  #lunarHour { color: rgba(255,255,255,0.45); }\n\n  @keyframes bmListPopIn {\n    from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }\n    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }\n  }\n\n  @keyframes bmFadeIn { from { opacity: 0; } to { opacity: 1; } }\n\n  #bmPopup { top:50%; left:50%; right:auto; transform:translate(-50%,-50%); overflow:hidden; }\n  #bmPopup.show { animation:bmFadeIn 0.25s ease; }\n  #bmPopup .bm-pages { position:relative; height:225px; }\n  #bmPopup .bm-page { position:absolute; top:0; left:0; right:0; bottom:0; transition:transform 0.3s ease, opacity 0.3s ease; }\n  #bmPopup .bm-page-1 { transform:translateX(0); opacity:1; pointer-events:auto; }\n  #bmPopup .bm-page-2 { transform:translateX(100%); opacity:0; pointer-events:none; }\n  #bmPopup.bm-page2 .bm-page-1 { transform:translateX(-30%); opacity:0; pointer-events:none; }\n  #bmPopup.bm-page2 .bm-page-2 { transform:translateX(0); opacity:1; pointer-events:auto; }\n  #bmPopup .bm-header { display:flex; align-items:center; justify-content:space-between; padding:8px 0; min-height:33px; }\n  #bmPopup .bm-header .title { margin-bottom:0; display:flex; align-items:center; gap:8px; }\n  #bmPopup .bm-header .back-text { color:rgba(255,255,255,0.5); cursor:pointer; font-size:14px; padding:2px 0; transition:color 0.15s; }\n  #bmPopup .bm-header .back-text:hover { color:rgba(255,255,255,0.8); }\n  #bmPopup .bm-header .bm-del-header { font-size:12px; font-weight:600; color:rgba(255,95,87,0.5); cursor:pointer; padding:2px 10px; border-radius:6px; border:none; background:rgba(255,255,255,0.06); box-shadow:0 0 8px rgba(0,0,0,0.2); transition:background 0.2s,color 0.2s; }\n  #bmPopup .bm-header .bm-del-header:hover { background:rgba(255,95,87,0.1); color:rgba(255,95,87,0.8); }\n  #bmPopup input { margin-bottom:12px; }\n  #bmPopup .icon-btn { display:block; text-align:center; position:relative; padding:8px 30px 8px 16px; border-radius:8px; border:none; cursor:pointer; font-size:14px; font-weight:700; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.8); box-shadow:0 0 10px rgba(0,0,0,0.25); transition:background-color 0.2s,color 0.2s,box-shadow 0.2s; }\n  #bmPopup .icon-btn:hover { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.85); box-shadow:0 0 16px rgba(0,0,0,0.4); }\n  #bmPopup .icon-btn .ib-status { color:rgba(255,255,255,0.55); }\n  #bmPopup .icon-btn .ib-arrow { position:absolute; right:14px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.3); font-size:11px; }\n  #bmPopup .bm-icon-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }\n  #bmPopup .bm-icon-row .icon-btn { flex:1; margin:0; min-width:0; }\n  #bmPopup .bm-btn-row { margin-top:12px; display:flex; gap:10px; }\n  #bmPopup .bm-btn-row .bm-add-btn { flex:1; margin-bottom:0; width:auto; }\n  #bmPopup .bm-add-btn { display:block; width:100%; box-sizing:border-box; padding:8px 16px; border-radius:8px; border:none; cursor:pointer; font-size:14px; font-weight:700; text-align:center; letter-spacing:2px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.8); box-shadow:0 0 10px rgba(0,0,0,0.25); transition:background-color 0.2s,color 0.2s,box-shadow 0.2s; margin-bottom:12px; }\n  #bmPopup .bm-add-btn:hover { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.85); box-shadow:0 0 16px rgba(0,0,0,0.4); }\n  #bmPopup .bm-icon-preview { width:34px; height:34px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-size:12px; overflow:hidden; flex-shrink:0; background:rgba(0,0,0,0.08); color:rgba(255,255,255,0.3); }\n  #bmPopup .bm-icon-preview img { width:100%; height:100%; object-fit:contain; }\n  #bmPopup .bm-icon-preview.has-icon { color:rgba(255,255,255,0.8); font-size:16px; }\n\n.wp-picker-overlay{position:fixed;inset:0;z-index: var(--z-overlay);background:rgba(0,0,0,0.01);display:none;justify-content:center;align-items:center;opacity:0;transition:opacity .25s ease}\n.wp-picker-overlay.show{display:flex;opacity:1;pointer-events:auto}\n.wp-picker{background:rgba(255,255,255, var(--card-alpha, 0.04));backdrop-filter:blur(calc(var(--glass-blur-4) * var(--card-blur-mul, 1))) saturate(1.3);-webkit-backdrop-filter:blur(calc(var(--glass-blur-4) * var(--card-blur-mul, 1))) saturate(1.3);border:1.5px solid rgba(255,255,255,0.2);border-radius:16px;padding:8px;width:200px;box-shadow:0 4px 20px rgba(0,0,0,0.2);max-height:40px;overflow:hidden;transition:max-height .7s ease;animation:popIn .25s ease}\n.wp-picker-overlay.show .wp-picker{max-height:460px}\n.wp-picker .title{font-size:13px;color:rgba(255,255,255,0.4);padding:8px 12px 6px;text-align:center}\n.wp-pick-opt{padding:6px 16px 6px 28px;border-radius:10px;cursor:pointer;font-size:14px;color:rgba(255,255,255,0.5);text-align:left;transition: background-color .2s, border-color .2s, transform .2s, opacity .2s, box-shadow .2s;margin:0;position:relative;opacity:0;animation:wpOptIn .3s ease forwards}\n.wp-pick-opt.active{color:rgba(255,255,255,0.7)}\n.wp-pick-opt.active::before{content:'\\25CF';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:10px}\n@keyframes wpOptIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}\n/* Minimal mode */\n@keyframes topSlideIn { from { transform: translateY(-60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }\n@keyframes topSlideOut{ from { transform: translateY(0);    opacity: 1; } to { transform: translateY(-60px); opacity: 0; } }\n:host(.minimal) .top-bar { visibility: hidden; }\n:host(.minimal.minimal-show) .top-bar { visibility: visible; }\n:host(.minimal.minimal-show) .settings-btn { animation: topSlideIn .3s ease; }\n:host(.minimal.anim-out) .settings-btn { animation: topSlideOut .3s ease forwards; }\n  /* §D-3 降低动效偏好：关掉常驻无限动画与\"从透明淡入\"的入场动画 */\n  @media (prefers-reduced-motion: reduce) {\n    #bg, #bg::before, #bg.bg-vivid, #bg.bg-vivid::before { animation: none; }\n    .wp-pick-opt { animation: none; opacity: 1; }\n  }\n",
+  html: "<div class=\"toast\" id=\"toast\">已切换为自动补位模式</div>\n<div id=\"bg\" class=\"bg-orca\"></div>\n<canvas id=\"rainCanvas\"></canvas>\n\n\n<div id=\"home\">\n  <div class=\"top-bar\">\n    <div class=\"top-right\">\n      <div class=\"settings-btn\" data-tooltip=\"设置\" data-action=\"toggleSettings\"><span class=\"gear-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M 3 17.2 A 18 18 0 0 1 12 1.6 A 18 18 0 0 1 21 17.2 A 18 18 0 0 1 3 17.2 Z\"/><circle cx=\"12\" cy=\"12\" r=\"2.5\"/></svg></span></div>\n    </div>\n  </div>\n\n  <div class=\"settings-popup\" id=\"settingsPopup\">\n    <div class=\"item\" data-action=\"editMotto\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z\"></path></svg></span> 修改格言</div>\n    <div class=\"item slider-item\"><div class=\"opacity-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"/></svg></span> 透明卡片</div><div class=\"opacity-expand\"><div class=\"slider-wrap\"><div class=\"slider-dots\"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><input type=\"range\" id=\"opacitySlider\" min=\"1\" max=\"10\" value=\"2\" step=\"1\" data-input=\"setCardOpacity\" data-value-arg=\"1\"><div class=\"slider-val\" id=\"opacityVal\">2</div></div></div></div><div class=\"item slider-item\"><div class=\"opacity-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z\"/></svg></span> 模糊程度</div><div class=\"opacity-expand\"><div class=\"slider-wrap\"><div class=\"slider-dots\"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><input type=\"range\" id=\"blurSlider\" min=\"1\" max=\"10\" value=\"9\" step=\"1\" data-input=\"setCardBlur\" data-value-arg=\"1\"><div class=\"slider-val\" id=\"blurVal\">9</div></div></div></div><div class=\"item color-item\"><div class=\"color-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><text x=\"12\" y=\"12\" text-anchor=\"middle\" dominant-baseline=\"central\" font-size=\"20\" font-weight=\"700\" fill=\"currentColor\" stroke=\"none\">L</text></svg></span> 文字颜色</div><div class=\"color-expand\"><div class=\"color-opt\" data-color=\"white\" data-action=\"setFontColor\" data-arg=\"white\">白色</div><div class=\"color-opt\" data-color=\"gray\" data-action=\"setFontColor\" data-arg=\"gray\">灰色</div><div class=\"color-opt active\" data-color=\"black\" data-action=\"setFontColor\" data-arg=\"black\">黑色</div><div class=\"prefs-divider\"></div><div class=\"color-opt\" data-color=\"custom\" data-action=\"setFontColor\" data-arg=\"custom\">自定义</div><div class=\"custom-expand\" id=\"customExpand\"><div class=\"custom-color-row\"><div class=\"color-preview\" id=\"colorPreview\" data-action=\"applyCustomColor\" title=\"点击应用颜色\"></div><input type=\"text\" id=\"customColorInput\" value=\"#FFFFFF\" maxlength=\"7\" data-enter=\"applyCustomColor\" data-input=\"previewCustomColor\"></div></div><div class=\"prefs-divider\"></div><div class=\"toggle-row\" data-action=\"toggleWhiteClock\" data-self=\"1\">白色时间<div class=\"toggle-track on\" id=\"toggleWhiteClock\"><div class=\"toggle-dot\"></div></div></div><div class=\"toggle-row\" data-action=\"toggleWhiteMotto\" data-self=\"1\">白色格言<div class=\"toggle-track on\" id=\"toggleWhiteMotto\"><div class=\"toggle-dot\"></div></div></div></div></div><div class=\"item prefs-item\"><div class=\"prefs-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><polygon points=\"12 2 15.1 8.5 22 9.3 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.3 8.9 8.5\"/></svg></span> 收藏偏好</div><div class=\"prefs-expand\"><div class=\"prefs-opt active\" data-action=\"setCompactMode\" data-arg=\"true\">自动补位</div><div class=\"prefs-opt\" data-action=\"setCompactMode\" data-arg=\"false\">维持原状</div><div class=\"prefs-divider\"></div><div class=\"prefs-opt\" data-action=\"setDisplayMode\" data-arg=\"false\">纯净模式</div><div class=\"prefs-opt active\" data-action=\"setDisplayMode\" data-arg=\"true\">详细模式</div></div></div>\n    <div class=\"item wallpaper-item\"><div class=\"wp-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><path d=\"M3 15l5-5 4 4 3-3 5 5\"></path></svg></span> 更换壁纸</div><div class=\"wp-expand\"><div class=\"wp-opt\" data-wp=\"orca\" data-action=\"applyWallpaper\" data-arg=\"orca\">Orca</div><div class=\"wp-opt\" data-wp=\"sky\" data-action=\"applyWallpaper\" data-arg=\"sky\">Sky</div><div class=\"wp-opt\" data-wp=\"deepspace\" data-action=\"applyWallpaper\" data-arg=\"deepspace\">Deep Space</div><div class=\"wp-opt\" data-wp=\"gray\" data-action=\"applyWallpaper\" data-arg=\"gray\">Grade Grey</div><div class=\"wp-opt\" data-wp=\"sunshine\" data-action=\"applyWallpaper\" data-arg=\"sunshine\">Evening Sunshine</div><div class=\"wp-opt\" data-wp=\"asteroid\" data-action=\"applyWallpaper\" data-arg=\"asteroid\">Moonlit Asteroid</div><div class=\"prefs-divider\"></div><div class=\"wp-opt\" data-wp=\"vivid\" data-action=\"applyWallpaper\" data-arg=\"vivid\">灵动</div><div class=\"wp-opt\" data-wp=\"rain\" data-action=\"applyWallpaper\" data-arg=\"rain\">雨滴</div><div class=\"wp-opt\" data-wp=\"firefly\" data-action=\"applyWallpaper\" data-arg=\"firefly\">萤火</div><div class=\"prefs-divider\"></div><div class=\"wp-opt\" data-wp=\"custom\" data-action=\"applyWallpaper\" data-arg=\"custom\">自定义</div></div></div>\n    <div class=\"item wallpaper-item\"><div class=\"wp-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z\"/></svg></span> 其他设置</div><div class=\"wp-expand\" id=\"otherSettingsExpand\"><div class=\"toggle-row\" data-action=\"toggleSwitch\" data-self=\"1\">显示格言<div class=\"toggle-track on\" id=\"toggleMotto\"><div class=\"toggle-dot\"></div></div></div><div class=\"toggle-row\" data-action=\"toggleMinimal\" data-self=\"1\">极简模式<div class=\"toggle-track\" id=\"toggleMinimal\"><div class=\"toggle-dot\"></div></div></div><div class=\"prefs-divider\"></div><div class=\"wp-opt\" data-action=\"resetDefaults\"><u>恢复全局默认设置 &#8634;</u></div></div></div>\n    <div class=\"item about-item\"><div class=\"about-top\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"16\"></line><line x1=\"12\" y1=\"8\" x2=\"12.01\" y2=\"8\"></line></svg></span> 关于</div><div class=\"about-expand\">开发者：JH<br>版本：V3.0.0「F」<br>更新：2026.10.30</div></div>\n  </div>\n\n  <div class=\"clock\" id=\"clock\" data-action=\"openLunarPopup\" data-date=\"\"></div>\n\n\n  <div class=\"search-area\">\n    <div class=\"search-wrap\">\n      <div class=\"engine-btn\" id=\"engineBtn\" data-action=\"toggleEngine\">\n        <span id=\"engineLabel\" class=\"eng-icon\" style=\"--ec:#0078D4\">B</span>\n      </div>\n      <input class=\"search-input\" id=\"searchInput\" placeholder=\"搜索…\" data-enter=\"doSearch\" maxlength=\"200\">\n      <div class=\"search-btn\" data-action=\"doSearch\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg></div>\n    </div>\n    <div class=\"engine-dropdown\" id=\"engineDropdown\">\n      <div class=\"opt\" data-e=\"https://www.google.com/search?q=\"><span class=\"eng-icon\" style=\"--ec:#4285F4\">G</span> Google</div>\n      <div class=\"opt active\" data-e=\"https://www.bing.com/search?q=\"><span class=\"eng-icon\" style=\"--ec:#0078D4\">B</span> Bing</div>\n      <div class=\"opt\" data-e=\"https://yandex.com/search/?text=\"><span class=\"eng-icon\" style=\"--ec:#FF0000\">Y</span> Yandex</div>\n    </div>\n  </div>\n\n  <div class=\"motto\" id=\"motto\" style=\"opacity:0\"></div>\n\n  <input type=\"file\" id=\"wallpaperInput\" accept=\"image/*\" style=\"display:none\">\n</div>\n\n\n\n\n\n<div class=\"bookmark-bar\" id=\"bookmarkBar\"></div>\n\n<div class=\"popup\" id=\"bmPopup\" style=\"min-width:min(360px, 88vw)\">\n  <div class=\"bm-pages\">\n    <div class=\"bm-page bm-page-1\">\n      <div class=\"bm-header\">\n        <div class=\"title\"><span id=\"bmTitle\">新建收藏</span></div>\n        <button class=\"bm-del-header\" id=\"bmDeleteBtn\" data-action=\"deleteBookmark\" style=\"display:none\">删除</button>\n      </div>\n      <input id=\"bmUrlInput\" placeholder=\"https://example.com\" data-blur=\"bmUrlChanged\">\n      <input id=\"bmNameInput\" placeholder=\"标题（留空自动获取）\">\n      <div class=\"bm-icon-row\">\n        <div class=\"bm-icon-preview\" id=\"bmIconPreviewSmall\">空</div>\n        <button class=\"icon-btn\" data-action=\"bmShowPage2\">\n          <span class=\"ib-status\"><span id=\"bmIconStatus\">自动获取</span></span>\n          <span class=\"ib-arrow\">›</span>\n        </button>\n      </div>\n      <div class=\"bm-btn-row\">\n        <button class=\"bm-add-btn\" id=\"bmSaveBtn\" data-action=\"saveBookmark\">添加</button>\n      </div>\n    </div>\n    <div class=\"bm-page bm-page-2\">\n      <div class=\"bm-header\">\n        <div class=\"title\" data-action=\"bmShowPage1\" style=\"cursor:pointer\"><span class=\"back-text\">〈</span> 图标设置</div>\n      </div>\n      <button class=\"bm-add-btn\" data-action=\"bmAutoIcon\">自动获取</button>\n      <button class=\"bm-add-btn\" data-action=\"pickIconFile\">本地上传</button>\n      <input id=\"bmIconUrlInput\" placeholder=\"图标 URL\" data-input=\"bmIconUrlChanged\" style=\"margin-bottom:0\">\n      <div class=\"bm-btn-row\">\n        <button class=\"bm-add-btn\" data-action=\"bmShowPage1\">〈 返回</button>\n      </div>\n    </div>\n  </div>\n</div>\n<input type=\"file\" id=\"bmIconUpload\" accept=\"image/*\" style=\"display:none\" data-change=\"handleIconUpload\" data-self=\"1\">\n\n<div class=\"bm-list-popup\" id=\"bmListPopup\">\n  <div class=\"title\">收藏管理<span class=\"bm-list-hint\">拖动可排序</span></div>\n  <div class=\"bm-list-wrap\" id=\"bmListWrap\"></div>\n  <button class=\"bm-list-add\" data-action=\"bmListAdd\">+ 添加新收藏</button>\n</div>\n\n\n<div class=\"settings-popup\" id=\"lunarPopup\">\n  <div style=\"font-size:14px;margin-bottom:4px\" id=\"lunarGanzhi\"></div>\n  <div style=\"font-size:14px;margin-bottom:4px\" id=\"lunarDate\"></div>\n  <div style=\"font-size:12px\" id=\"lunarHour\"></div>\n</div>\n\n<div class=\"popup\" id=\"mottoPopup\" style=\"min-width:min(380px, 88vw)\">\n  <div class=\"title\">编辑格言内容</div>\n  <div style=\"position:relative\">\n    <textarea id=\"mottoInput\" rows=\"3\" placeholder=\"鹰击长空，鱼翔浅底，万类霜天竞自由。\" maxlength=\"42\" style=\"resize:none;padding-bottom:18px\"></textarea>\n    <div class=\"hint\" style=\"position:absolute;right:10px;bottom:10px;font-size:11px;pointer-events:none;margin-top:0\">不多于42个字符</div>\n  </div>\n  <div class=\"btn-row\">\n    <button class=\"btn btn-primary btn-cancel\" data-action=\"resetMotto\" style=\"margin-right:auto;font-size:16px\" title=\"恢复默认格言\">↺</button>\n    <button class=\"btn btn-primary btn-cancel\" data-action=\"closePopup\" data-arg=\"mottoPopup\">✖</button>\n    <button class=\"btn btn-primary btn-save\" data-action=\"saveMottoAndClose\">✔</button>\n  </div>\n</div>\n\n<div class=\"wp-picker-overlay\" id=\"wpPickerOverlay\">\n  <div class=\"wp-picker\">\n    <div class=\"title\">更换壁纸</div>\n    <div class=\"wp-pick-opt\" data-wp=\"orca\" data-action=\"wpPickApply\" data-arg=\"orca\">Orca</div>\n    <div class=\"wp-pick-opt\" data-wp=\"sky\" data-action=\"wpPickApply\" data-arg=\"sky\">Sky</div>\n    <div class=\"wp-pick-opt\" data-wp=\"deepspace\" data-action=\"wpPickApply\" data-arg=\"deepspace\">Deep Space</div>\n    <div class=\"wp-pick-opt\" data-wp=\"gray\" data-action=\"wpPickApply\" data-arg=\"gray\">Grade Grey</div><div class=\"wp-pick-opt\" data-wp=\"sunshine\" data-action=\"wpPickApply\" data-arg=\"sunshine\">Evening Sunshine</div><div class=\"wp-pick-opt\" data-wp=\"asteroid\" data-action=\"wpPickApply\" data-arg=\"asteroid\">Moonlit Asteroid</div>\n    <div class=\"prefs-divider\"></div><div class=\"wp-pick-opt\" data-wp=\"vivid\" data-action=\"wpPickApply\" data-arg=\"vivid\">灵动</div><div class=\"wp-pick-opt\" data-wp=\"rain\" data-action=\"wpPickApply\" data-arg=\"rain\">雨滴</div><div class=\"wp-pick-opt\" data-wp=\"firefly\" data-action=\"wpPickApply\" data-arg=\"firefly\">萤火</div><div class=\"prefs-divider\"></div>\n    <div class=\"wp-pick-opt\" data-wp=\"custom\" data-action=\"wpPickApply\" data-arg=\"custom\">自定义</div>\n  </div>\n</div>"
+};
+
+self.__LSP_PRE__ = function (document, localStorage) {
+if(localStorage.getItem('mc_toggleMinimal')==='1')document.documentElement.classList.add('minimal');
+};
+
+self.__LSP_CONST__ = function (window) {
+
+// Lunar Calendar Constants — embedded inline
+window.LUNAR_CONSTANTS = {
+  GAN: ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
+  ZHI: ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'],
+  SHENGXIAO: ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'],
+  LMON: ['正','二','三','四','五','六','七','八','九','十','冬','腊'],
+  LDAY: ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'],
+  SHICHEN: ['子时','丑时','寅时','卯时','辰时','巳时','午时','未时','申时','酉时','戌时','亥时'],
+  SHICHEN_RANGE: ['23:00-01:00','01:00-03:00','03:00-05:00','05:00-07:00','07:00-09:00','09:00-11:00','11:00-13:00','13:00-15:00','15:00-17:00','17:00-19:00','19:00-21:00','21:00-23:00']
+};
+
+};
+
+self.__LSP_MAIN__ = function (document, window, localStorage) {
+
+(function() {
+  // L namespace
+  window.L = window.L || {};
+
+  /* ==========================================================================
+   * §0  配置层   CONFIG / KEYS / DEFAULTS / WALLPAPERS
+   * --------------------------------------------------------------------------
+   * 职责：全站唯一的常量与默认值来源。
+   * 依赖：无（最底层）。
+   * 约定：新增存储键 → 先登记 KEYS；新增壁纸 → 先登记 WALLPAPERS；
+   *       新增默认值 → 先登记 DEFAULTS。禁止在业务代码里再写字面量键名。
+   * 背景：重构前这些字面量散落在 70 处 localStorage 调用里，同一个键名
+   *       在 3~5 个地方各写一遍，改一处必漏一处（详见 CHANGELOG P1）。
+   * ======================================================================== */
+
+  /** 运行期配置（不持久化） */
+  const CONFIG = {
+    BM_TOTAL: 20,                  // 收藏槽位总数
+    BM_VISIBLE: 10,                // 书签 Dock 可见槽位数
+    TOAST_MS: 3000,                // toast 停留时长
+    WALLPAPER_MAX_PX: 1920,        // 壁纸压缩后最长边（像素）
+    WALLPAPER_QUALITY: 0.82,       // 壁纸 JPEG 质量
+    WALLPAPER_MAX_BYTES: 2097152,  // 壁纸入库上限 2MB（localStorage 配额约 5MB，需与收藏图标共享）
+    ICON_MAX_PX: 64,               // 收藏图标压缩后最长边（像素）
+    ICON_MAX_BYTES: 65536,         // 收藏图标入库上限 64KB
+    MINIMAL_HIDE_DELAY_MS: 6600    // 极简模式空闲隐藏延迟
+  };
+
+  /** localStorage 键名表（全站唯一来源） */
+  const KEYS = {
+    PREFS: 'mc_prefs',          // 收藏偏好（紧凑 / 详细）
+    BOOKMARKS: 'mc_bookmarks',
+    MOTTO: 'mc_motto',
+    BG: 'mc_bg',                // 自定义壁纸（dataURL）
+    BG_TYPE: 'mc_bg_type',
+    FONT: 'mc_font',
+    CUSTOM_COLOR: 'mc_customColor',
+    OPACITY: 'mc_opacity',
+    BLUR: 'mc_blur',            // 玻璃模糊程度（1~10 档）
+    TOGGLE_MOTTO: 'mc_toggleMotto',
+    TOGGLE_MINIMAL: 'mc_toggleMinimal',
+    WHITE_CLOCK: 'mc_whiteClock',
+    WHITE_MOTTO: 'mc_whiteMotto'
+  };
+
+  /** 首次使用时的默认值 */
+  const DEFAULTS = {
+    opacity: 2,
+    blur: 9,
+    font: 'black',
+    bgType: 'orca',
+    motto: '春眠不觉晓，处处闻啼鸟。',
+    mottoFallback: '鹰击长空，鱼翔浅底，万类霜天竞自由。',
+    customColor: '#FFFFFF'
+  };
+
+  /** 预设壁纸表：cls 为 #bg 上的类名；effect 为联动的粒子特效 */
+  const WALLPAPERS = {
+    orca:      { label: 'Orca',             cls: 'bg-orca' },
+    sky:       { label: 'Sky',              cls: 'bg-sky' },
+    deepspace: { label: 'Deep Space',       cls: 'bg-deepspace' },
+    gray:      { label: 'Grade Grey',       cls: 'bg-gray' },
+    sunshine:  { label: 'Evening Sunshine', cls: 'bg-sunshine' },
+    asteroid:  { label: 'Moonlit Asteroid', cls: 'bg-asteroid' },
+    vivid:     { label: '灵动',             cls: 'bg-vivid' },
+    rain:      { label: '雨滴',             cls: 'bg-rain',    effect: 'rain' },
+    firefly:   { label: '萤火',             cls: 'bg-firefly', effect: 'firefly' }
+  };
+
+  /** 全部壁纸类名，供"先清后加"统一使用 */
+  const BG_CLASSES = Object.keys(WALLPAPERS).map(function (k) { return WALLPAPERS[k].cls; });
+
+  /**
+   * 设置项注册表 —— 全站唯一的状态声明。
+   * 新增一个开关：在这里登记一行 + HTML 里加一个 data-action 控件即可，不需要
+   * 再去改初始化、重置、存储键三处。
+   * type: 'flag' 布尔（存 '1'/'0'） | 'int' 整数 | 'text' 文本（'' 有意义）
+   */
+  const SETTINGS = {
+    motto:       { key: KEYS.TOGGLE_MOTTO,   type: 'flag', def: true,     label: '显示格言' },
+    minimal:     { key: KEYS.TOGGLE_MINIMAL, type: 'flag', def: false,    label: '极简模式' },
+    whiteClock:  { key: KEYS.WHITE_CLOCK,    type: 'flag', def: true,     label: '白色时间' },
+    whiteMotto:  { key: KEYS.WHITE_MOTTO,    type: 'flag', def: true,     label: '白色格言' },
+    opacity:     { key: KEYS.OPACITY,        type: 'int',  def: 2,        label: '透明卡片' },
+    blur:        { key: KEYS.BLUR,           type: 'int',  def: 9,        label: '模糊程度' },
+    font:        { key: KEYS.FONT,           type: 'enum', def: 'black',  label: '文字颜色' },
+    bgType:      { key: KEYS.BG_TYPE,        type: 'text', def: '',       label: '壁纸' },
+    mottoText:   { key: KEYS.MOTTO,          type: 'text', def: '春眠不觉晓，处处闻啼鸟。', label: '格言内容' },
+    customColor: { key: KEYS.CUSTOM_COLOR,   type: 'text', def: '#FFFFFF', label: '自定义颜色' }
+  };
+
+  /** 存储键 → 设置项名 的反查表（供仍以键名传参的旧接口使用） */
+  const SETTING_BY_KEY = {};
+  Object.keys(SETTINGS).forEach(function (n) { SETTING_BY_KEY[SETTINGS[n].key] = n; });
+
+  /** 开关 DOM id → 设置项名（HTML 里 .toggle-track 的 id） */
+  const TOGGLE_IDS = {
+    toggleMotto: 'motto', toggleMinimal: 'minimal',
+    toggleWhiteClock: 'whiteClock', toggleWhiteMotto: 'whiteMotto'
+  };
+
+  /* ==========================================================================
+   * §1  状态层 · Store
+   * --------------------------------------------------------------------------
+   * 职责：全站唯一的状态读写入口。
+   *   · 设置项按 §0 SETTINGS 的类型与默认值读写
+   *   · 所有写入走 try/catch：配额超限 / 存储被禁用时返回 false 并回调报错，
+   *     不再像以前那样静默抛错或静默失败
+   *   · subscribe()：状态变化通知视图
+   * 约定：§2 及以上模块一律不得直接调用 localStorage，全部经 Store。
+   * ======================================================================== */
+  const Store = (function () {
+    const listeners = [];
+    let onError = null;
+
+    /* ---------- 底层读写（全文件唯一直接接触 localStorage 的地方） ---------- */
+
+    /**
+     * 读取原始字符串。
+     * @param {string} key
+     * @returns {string|null} 读取失败（隐私模式等）返回 null
+     */
+    function raw(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+
+    /**
+     * 安全写入。
+     * @param {string} key
+     * @param {string} value
+     * @returns {boolean} 成功为 true；配额超限或存储被禁用为 false
+     * @sideEffect 写 localStorage；失败时触发 onStorageError 回调
+     */
+    function write(key, value) {
+      try { localStorage.setItem(key, value); return true; }
+      catch (e) { if (onError) onError(e, key); return false; }
+    }
+
+    /**
+     * 删除键。
+     * @param {string} key
+     * @sideEffect 改 localStorage（失败静默）
+     */
+    function remove(key) { try { localStorage.removeItem(key); } catch (e) {} }
+
+    /**
+     * 解析 JSON 存储项。
+     * @param {string} key
+     * @param {*} fallback 缺省或解析失败时的返回值
+     * @returns {*}
+     */
+    function json(key, fallback) {
+      const v = raw(key);
+      if (v === null || v === '') return fallback;
+      try { const d = JSON.parse(v); return d === null ? fallback : d; }
+      catch (e) { return fallback; }
+    }
+
+    /* ---------- 设置项 ---------- */
+
+    /**
+     * 读设置项，未设置时返回注册表默认值。
+     * @param {string} name §0 SETTINGS 的键
+     * @returns {boolean|number|string|undefined} 未注册的名称返回 undefined
+     * @sideEffect 只读 localStorage
+     */
+    function setting(name) {
+      const s = SETTINGS[name];
+      if (!s) return undefined;
+      const v = raw(s.key);
+      if (s.type === 'flag') return v === null ? !!s.def : v === '1';
+      if (s.type === 'int') { const n = parseInt(v, 10); return isNaN(n) ? s.def : n; }
+      return (v === null || v === '') ? s.def : v;
+    }
+
+    /**
+     * 写设置项并广播变更。
+     * @param {string} name §0 SETTINGS 的键
+     * @param {boolean|number|string} value
+     * @returns {boolean} 写入是否成功
+     * @sideEffect 写 localStorage；通知订阅者
+     */
+    function setSetting(name, value) {
+      const s = SETTINGS[name];
+      if (!s) return false;
+      const ok = write(s.key, s.type === 'flag' ? (value ? '1' : '0') : String(value));
+      if (ok) emit(name);
+      return ok;
+    }
+
+    /* ---------- 订阅 ---------- */
+
+    /**
+     * 订阅状态变化。
+     * @param {(name:string)=>void} fn
+     * @returns {()=>void} 取消订阅
+     */
+    function subscribe(fn) {
+      listeners.push(fn);
+      return function () { const i = listeners.indexOf(fn); if (i >= 0) listeners.splice(i, 1); };
+    }
+
+    /** 广播变更（订阅者异常不影响其他订阅者） */
+    function emit(name) { listeners.forEach(function (fn) { try { fn(name); } catch (e) {} }); }
+
+    /**
+     * 注册存储错误回调（由 §4 注入 toast，避免状态层反向依赖 UI）。
+     * @param {(err:Error, key:string)=>void} fn
+     */
+    function onStorageError(fn) { onError = fn; }
+
+    return {
+      raw: raw, write: write, remove: remove, json: json,
+      setting: setting, setSetting: setSetting,
+      subscribe: subscribe, onStorageError: onStorageError
+    };
+  })();
+
+
+
+  /* ==========================================================================
+   * §2  领域层   Domain（纯逻辑：不碰 DOM、不碰存储、不改全局状态）
+   * --------------------------------------------------------------------------
+   * 为什么单独一层：农历换算、收藏槽位这些规则原先直接长在视图
+   * 函数里，既不好测、也容易被顺手改坏。抽成纯函数后可被 tests/p4.test.mjs 直接调用。
+   * 约定：只接收参数、只返回新值（少数就地修改数组的方法会返回同一数组以便链式使用）。
+   * ======================================================================== */
+
+  /** 二十四节气名（小寒起） */
+  const SOLAR_TERMS = [
+    '小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
+    '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑',
+    '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至'
+  ];
+  /** 每个节气的近似交节日期（月*100+日），与小寒一一对应 */
+  const SOLAR_TERM_DAYS = [105, 120, 204, 219, 305, 320, 405, 420, 505, 521, 605, 621,
+    707, 722, 807, 823, 907, 923, 1008, 1023, 1107, 1122, 1207, 1222];
+
+  const Domain = {
+    /* ---------- 农历与干支 ---------- */
+    Lunar: {
+      /**
+       * 十二时辰序号。
+       * @param {Date} date
+       * @returns {number} 0~11（0 = 子时）
+       */
+      shichenIndex: function (date) { return Math.floor((date.getHours() + 1) / 2) % 12; },
+
+      /**
+       * 由干支年名取生肖。
+       * @param {string} yearName 如 '丙午'
+       * @returns {string} 如 '马'；取不到时返回 ''
+       */
+      zodiacOf: function (yearName) {
+        var zhi = yearName && yearName.length >= 2 ? yearName[yearName.length - 1] : '';
+        for (var i = 0; i < ZHI.length; i++) { if (ZHI[i] === zhi) return SHENGXIAO[i] || ''; }
+        return '';
+      },
+
+      /**
+       * 日柱干支。锚点：1900-01-01 = 甲戌日（已用 2024-01-01 甲子、1949-10-01 甲子核对）。
+       * @param {Date} date
+       * @returns {string} 如 '甲子'
+       * 说明：用 Math.round 而非 Math.floor —— 本地时区在夏令时/历史时区下两日之差可能
+       *       不是整数天，floor 会整体差一天（南半球时区尤其明显）。
+       */
+      ganzhiDay: function (date) {
+        var ref = new Date(1900, 0, 1);
+        var diff = Math.round((date - ref) / 86400000);
+        return GAN[((diff % 10) + 10) % 10] + ZHI[((diff % 12) + 10) % 12];
+      },
+
+      /**
+       * 当前所处节气（近似表，交节当天可能差 1 天）。
+       * @param {Date} date
+       * @returns {string}
+       */
+      solarTerm: function (date) {
+        var v = date.getMonth() * 100 + date.getDate() + 100;
+        for (var i = SOLAR_TERM_DAYS.length - 1; i >= 0; i--) {
+          if (v >= SOLAR_TERM_DAYS[i]) return SOLAR_TERMS[i];
+        }
+        return SOLAR_TERMS[SOLAR_TERMS.length - 1];
+      },
+
+      /**
+       * 农历 / 干支快照，供视图一次性取用。
+       * @param {Date} date
+       * @returns {{yearName:string, zodiac:string, month:string, day:string, solarTerm:string,
+       *            shichen:string, shichenRange:string, shichenIndex:number, ganzhiDay:string}}
+       */
+      snapshot: function (date) {
+        var p = _lunarFull.formatToParts(date), y = '', m = '', d = '';
+        p.forEach(function (x) {
+          if (x.type === 'yearName') y = x.value;
+          else if (x.type === 'month') m = x.value;
+          else if (x.type === 'day') d = x.value;
+        });
+        var si = Domain.Lunar.shichenIndex(date);
+        return {
+          yearName: y,
+          zodiac: Domain.Lunar.zodiacOf(y),
+          month: m,
+          day: d,
+          solarTerm: Domain.Lunar.solarTerm(date),
+          shichen: SHICHEN[si] || '',
+          shichenRange: SHICHEN_RANGE[si] || '',
+          shichenIndex: si,
+          ganzhiDay: Domain.Lunar.ganzhiDay(date)
+        };
+      }
+    },
+
+    /* ---------- 收藏槽位 ---------- */
+    Bookmarks: {
+      /**
+       * 把存储里的原始值规整为定长槽位数组。
+       * @param {*} raw Store.json 读到的原始值
+       * @param {number} total 槽位总数
+       * @returns {{slots:Array<object|null>, repaired:boolean, corrupt:boolean}}
+       *          repaired=true 表示长度不符（已截断/补齐，内容不丢）；
+       *          corrupt=true 表示根本不是数组（调用方提示用户，但不要删原始数据）
+       */
+      normalizeSlots: function (raw, total) {
+        if (Array.isArray(raw)) {
+          if (raw.length === total) return { slots: raw, repaired: false, corrupt: false };
+          var slots = raw.slice(0, total);
+          while (slots.length < total) slots.push(null);
+          return { slots: slots, repaired: true, corrupt: false };
+        }
+        var empty = [];
+        for (var i = 0; i < total; i++) empty.push(null);
+        return { slots: empty, repaired: false, corrupt: raw !== null && raw !== undefined };
+      },
+
+      /**
+       * 槽位下标是否合法。
+       * @param {*} idx
+       * @param {number} total
+       * @returns {boolean}
+       */
+      isValidIndex: function (idx, total) { return Number.isInteger(idx) && idx >= 0 && idx < total; },
+
+      /**
+       * 删除槽位。compact=true 时后续槽位整体前移（自动补位）。
+       * @param {Array} slots
+       * @param {number} idx
+       * @param {boolean} compact
+       * @returns {Array} 同一个数组（便于链式使用）
+       */
+      removeAt: function (slots, idx, compact) {
+        if (compact) {
+          for (var j = idx; j < slots.length - 1; j++) slots[j] = slots[j + 1];
+          slots[slots.length - 1] = null;
+        } else {
+          slots[idx] = null;
+        }
+        return slots;
+      },
+
+      /**
+       * 全部前移去掉空槽（"自动补位"偏好切换时使用）。
+       * @param {Array} slots
+       * @returns {Array} 同一个数组
+       */
+      compact: function (slots) {
+        var filled = slots.filter(function (s) { return !!s; });
+        for (var i = 0; i < slots.length; i++) slots[i] = filled[i] || null;
+        return slots;
+      },
+
+      /**
+       * 在"已占用槽位"之间移动收藏：物理槽位不变，只移动内容。
+       * 这样"自动补位"与"维持原状"两种偏好下都成立。
+       * @param {Array} slots 定长槽位数组
+       * @param {number} from 源槽位下标
+       * @param {number} to 目标槽位下标
+       * @returns {boolean} 是否真的发生了移动（下标相同或无效时为 false）
+       */
+      move: function (slots, from, to) {
+        if (from === to) return false;
+        var order = [];
+        for (var i = 0; i < slots.length; i++) { if (slots[i]) order.push(i); }
+        var p = order.indexOf(from), q = order.indexOf(to);
+        if (p < 0 || q < 0) return false;
+        var items = order.map(function (k) { return slots[k]; });
+        items.splice(q, 0, items.splice(p, 1)[0]);
+        for (var j = 0; j < order.length; j++) slots[order[j]] = items[j];
+        return true;
+      },
+
+      /**
+       * 第一个空槽下标。
+       * @param {Array} slots
+       * @returns {number} 没有空位时返回 -1
+       */
+      nextFree: function (slots) {
+        for (var i = 0; i < slots.length; i++) { if (!slots[i]) return i; }
+        return -1;
+      }
+    }
+  };
+
+  /* ==========================================================================
+   * §4  视图层 · PopupManager（浮层管理器）
+   * --------------------------------------------------------------------------
+   * 职责：统一管理全部浮层的"打开 / 关闭 / 切换 / 顺序"。
+   *   · 每个浮层在下面的登记表里声明一次，并写明"点到哪些区域不该关自己"
+   *   · 外部点击 → handleOutsideClick()：一次点击关闭所有规则允许关闭的浮层
+   *     （结果与重构前各弹窗独立判断一致，但逻辑只剩一处）
+   *   · Esc → handleKeydown()：只关最上层（重构前只关书签栏，设置弹窗关不掉）
+   *   · 打开顺序即层级顺序；z 能力已预留，P5 统一 CSS 阶梯后再接管
+   * 约定：新增浮层 = 登记表加一行；关闭逻辑不必再写。
+   * ======================================================================== */
+  const PopupManager = (function () {
+    const entries = {};   // id -> 登记项
+    const order = [];     // 打开顺序（栈底 → 栈顶）
+    const listeners = [];
+
+    /**
+     * 登记一个浮层。
+     * @param {string} id 元素 id
+     * @param {object} [opts]
+     * @param {string[]} [opts.triggers] 命中这些选择器的点击不关闭自己（触发按钮等）
+     * @param {boolean} [opts.pointerGuard] mousedown 落在自己内部时也不关闭（防误关）
+     * @param {boolean} [opts.backdrop] 登记元素本身是遮罩：点它即关闭，只有 triggers 区域算内部
+     * @param {string} [opts.showClass] 显示类名，默认 'show'
+     * @param {string} [opts.group] 分组，供 closeGroup() 使用
+     * @param {number|null} [opts.z] 基础层级（null = 不接管，沿用 CSS）
+     * @param {boolean} [opts.countsAsPopup] 是否计入"有浮层打开"（影响极简模式暂停）
+     * @param {boolean} [opts.external] 显隐由既有代码控制，管理器只跟踪顺序（如全屏遮罩）
+     * @param {()=>boolean} [opts.isOpenFn] external 项的打开判定
+     * @param {()=>void} [opts.onClose] 关闭后的回调
+     */
+    function register(id, opts) {
+      const o = opts || {};
+      entries[id] = {
+        id: id,
+        showClass: o.showClass || 'show',
+        triggers: o.triggers || [],
+        pointerGuard: !!o.pointerGuard,
+        backdrop: !!o.backdrop,
+        group: o.group || 'misc',
+        z: (o.z === undefined ? null : o.z),
+        countsAsPopup: o.countsAsPopup !== false,
+        external: !!o.external,
+        isOpenFn: o.isOpenFn || null,
+        onClose: o.onClose || null,
+        _el: null
+      };
+      return entries[id];
+    }
+
+    /** 惰性取元素：脚本在 <body> 中段执行，文件末尾的浮层元素此刻还不存在 */
+    function nodeOf(e) {
+      if (!e._el) e._el = document.getElementById(e.id);
+      return e._el;
+    }
+
+    /**
+     * 浮层是否打开。
+     * @param {string} id
+     * @returns {boolean}
+     */
+    function isOpen(id) {
+      const e = entries[id];
+      if (!e) return false;
+      if (e.external) return !!(e.isOpenFn && e.isOpenFn());
+      const n = nodeOf(e);
+      return !!(n && n.classList.contains(e.showClass));
+    }
+
+    /** @returns {string[]} 当前打开的浮层，自栈底到栈顶 */
+    function stack() { return order.filter(isOpen); }
+
+    function notify() { listeners.forEach(function (fn) { try { fn(); } catch (err) {} }); }
+    function push(id) { const i = order.indexOf(id); if (i >= 0) order.splice(i, 1); order.push(id); }
+    function pull(id) { const i = order.indexOf(id); if (i >= 0) order.splice(i, 1); }
+
+    /** 按栈序重算层级（仅对登记了 z 的浮层生效） */
+    function applyZ() {
+      stack().forEach(function (id, i) {
+        const e = entries[id];
+        if (e.z === null) return;
+        const n = nodeOf(e);
+        if (n) n.style.zIndex = String(e.z + i * 5);
+      });
+    }
+
+    /**
+     * 打开浮层。
+     * @param {string} id
+     * @sideEffect 加显示类、刷新层级、通知订阅者（重复调用无副作用）
+     */
+    function open(id) {
+      const e = entries[id];
+      if (!e) return;
+      // external 项的显隐由既有代码负责，这里只补记顺序
+      if (e.external) { push(id); applyZ(); notify(); return; }
+      if (isOpen(id)) return;
+      push(id);
+      const n = nodeOf(e);
+      if (n) n.classList.add(e.showClass);
+      applyZ();
+      notify();
+    }
+
+    /**
+     * 关闭浮层并触发 onClose。
+     * @param {string} id
+     * @sideEffect 移除显示类、刷新层级、回调、通知订阅者
+     */
+    function close(id) {
+      const e = entries[id];
+      if (!e || !isOpen(id)) return;
+      pull(id);
+      if (!e.external) { const n = nodeOf(e); if (n) n.classList.remove(e.showClass); }
+      applyZ();
+      if (e.onClose) e.onClose();
+      notify();
+    }
+
+    /**
+     * 只从栈里摘除，不触发 onClose。
+     * 供 external 项自己收尾时调用，避免 closeMorph → onClose → closeMorph 递归。
+     * @param {string} id
+     */
+    function markClosed(id) { pull(id); applyZ(); notify(); }
+
+    /** @param {string} id */
+    function toggle(id) { isOpen(id) ? close(id) : open(id); }
+
+    /**
+     * 关闭最上层浮层。
+     * @returns {boolean} 是否关掉了东西
+     */
+    function closeTop() { const s = stack(); if (!s.length) return false; close(s[s.length - 1]); return true; }
+
+    /**
+     * 按分组关闭。closeAllPopups() 用的是 'form' 组，语义与重构前的
+     * "document.querySelectorAll('.popup.show')" 完全一致。
+     * @param {string} group
+     */
+    function closeGroup(group) { stack().slice().forEach(function (id) { if (entries[id].group === group) close(id); }); }
+
+    /**
+     * 全部关闭。
+     * @param {boolean} [includeExternal] 是否包含 external 项（默认不含，与重构前一致）
+     */
+    function closeAll(includeExternal) {
+      stack().slice().forEach(function (id) {
+        if (!includeExternal && entries[id].external) return;
+        close(id);
+      });
+    }
+
+    /**
+     * 外部点击：一次点击关闭所有"规则允许关闭"的浮层。
+     * @param {MouseEvent} e
+     * @param {EventTarget|null} ptrDown mousedown 目标，用于避免"按下在弹窗内、松开在外"的误关
+     * @sideEffect 可能关闭若干浮层
+     */
+    function handleOutsideClick(e, ptrDown) {
+      stack().slice().forEach(function (id) {
+        const en = entries[id];
+        if (en.external) return;
+        const t = e.target;
+        const hitTrigger = en.triggers.some(function (sel) { return t && t.closest && t.closest(sel); });
+        // 遮罩型浮层（如壁纸选择器）：登记元素本身就是"外面"，只有 triggers 区域算内部。
+        // 否则 t.closest('#' + id) 会把点击遮罩背景也算成"点在浮层内部"，导致点外面关不掉。
+        if (en.backdrop) {
+          if (!hitTrigger) close(id);
+          return;
+        }
+        if (t && t.closest && t.closest('#' + id)) return;
+        if (en.pointerGuard && ptrDown && ptrDown.closest && ptrDown.closest('#' + id)) return;
+        if (hitTrigger) return;
+        close(id);
+      });
+    }
+
+    /**
+     * Esc：关最上层。
+     * @param {KeyboardEvent} e
+     * @returns {boolean} 是否消费了该按键
+     */
+    function handleKeydown(e) {
+      if (e.key !== 'Escape') return false;
+      return closeTop();
+    }
+
+    /**
+     * 订阅浮层状态变化。
+     * @param {()=>void} fn
+     * @returns {()=>void} 取消订阅
+     */
+    function subscribe(fn) { listeners.push(fn); return function () { const i = listeners.indexOf(fn); if (i >= 0) listeners.splice(i, 1); }; }
+
+    /** @returns {boolean} 是否存在"计入浮层"的打开项 */
+    function anyOpen() { return stack().some(function (id) { return entries[id].countsAsPopup; }); }
+
+    return {
+      register: register, open: open, close: close, toggle: toggle, markClosed: markClosed,
+      closeTop: closeTop, closeGroup: closeGroup, closeAll: closeAll,
+      isOpen: isOpen, stack: stack, anyOpen: anyOpen,
+      handleOutsideClick: handleOutsideClick, handleKeydown: handleKeydown, subscribe: subscribe
+    };
+  })();
+
+  /* ---------- 浮层登记表（新增浮层只需加一行） ----------
+   * triggers：点这些区域不该关自己；pointerGuard：按下在弹窗内也不关；
+   * backdrop：登记元素本身是"遮罩"，点它即关闭（壁纸选择器这类全屏遮罩用）；
+   * z 一律留空，层级由 P5 的 CSS 阶梯统一接管。 */
+  PopupManager.register('settingsPopup',  { group: 'menu', triggers: ['.settings-btn'] });
+  PopupManager.register('mottoPopup',     { group: 'form', triggers: ['.settings-popup'], pointerGuard: true });
+  PopupManager.register('bmPopup',        { group: 'form', triggers: ['.bm-slot', '.bm-list-popup'], pointerGuard: true,
+                                            onClose: function () { onBmPopupClosed(); } });
+  PopupManager.register('bmListPopup',    { group: 'list' });
+  PopupManager.register('engineDropdown', { group: 'menu', triggers: ['.engine-btn'] });
+  PopupManager.register('lunarPopup',     { group: 'info', triggers: ['.clock'], countsAsPopup: false });
+  PopupManager.register('wpPickerOverlay',{ group: 'overlay', backdrop: true, triggers: ['.wp-picker'] });
+
+  /* ==========================================================================
+   * §4  视图层 · 事件委托（data-action）
+   * --------------------------------------------------------------------------
+   * 用法：HTML 里写 data-action="函数名"，可选 data-arg / data-self /
+   *       data-value-arg；输入类事件写 data-input / data-change / data-blur /
+   *       data-enter。新增按钮只需加一个 data-action，不必再写内联 onclick、
+   *       也不必往 window.L 上挂新函数。
+   * 安全：只允许 ACTIONS 白名单里的名字被 DOM 触发，避免任意函数暴露给标记。
+   * 约定：ACTIONS 的每个处理函数签名为 (el, arg)；el 是带 data-* 的元素本身。
+   * ======================================================================== */
+
+  /* ---------- data-action 用到的具名流程（原先是内联多语句） ---------- */
+
+  /** 打开收藏图标的本地上传文件框 */
+  function pickIconFile() { document.getElementById('bmIconUpload').click(); }
+
+  /** 保存格言并关闭弹窗（原先内联写了两条语句） */
+  function saveMottoAndClose() { saveMotto(); PopupManager.close('mottoPopup'); }
+
+  /** 格言恢复默认并保存 */
+  function resetMotto() {
+    document.getElementById('mottoInput').value = DEFAULTS.mottoFallback;
+    saveMotto();
+  }
+
+  /* ---------- 白名单分发表 ---------- */
+
+  /** @type {Object.<string, (el:HTMLElement, arg:(string|undefined))=>void>} */
+  const ACTIONS = {
+    /* 浮层 */
+    toggleSettings: function () { toggleSettings(); },
+    closePopup: function (el, arg) { PopupManager.close(arg); },
+    editMotto: function () { editMotto(); },
+    openLunarPopup: function () { openLunarPopup(); },
+    hideWpPicker: function () { PopupManager.close('wpPickerOverlay'); },
+    wpPickApply: function (el, arg) { applyWallpaper(arg); },
+    /* 设置 */
+    applyWallpaper: function (el, arg) { applyWallpaper(arg); },
+    setFontColor: function (el, arg) { setFontColor(arg); },
+    applyCustomColor: function () { applyCustomColor(); },
+    previewCustomColor: function () { previewCustomColor(); },
+    setCardOpacity: function (el, arg) { setCardOpacity(arg !== undefined ? arg : el.value); },
+    setCardBlur: function (el, arg) { setCardBlur(arg !== undefined ? arg : el.value); },
+    toggleSwitch: function (el) { toggleSwitch(el); },
+    toggleMinimal: function (el) { toggleMinimal(el); },
+    toggleWhiteClock: function (el) { toggleWhiteClock(el); },
+    toggleWhiteMotto: function (el) { toggleWhiteMotto(el); },
+    setCompactMode: function (el, arg) { setCompactMode(arg === 'true'); },
+    setDisplayMode: function (el, arg) { setDisplayMode(arg === 'true'); },
+    resetDefaults: function () { resetDefaults(); },
+    saveMottoAndClose: function () { saveMottoAndClose(); },
+    resetMotto: function () { resetMotto(); },
+    /* 收藏 */
+    saveBookmark: function () { saveBookmark(); },
+    deleteBookmark: function () { deleteBookmark(); },
+    bmShowPage1: function () { bmShowPage1(); },
+    bmShowPage2: function () { bmShowPage2(); },
+    bmAutoIcon: function () { bmAutoIcon(); },
+    bmIconUrlChanged: function () { bmIconUrlChanged(); },
+    bmUrlChanged: function () { bmUrlChanged(); },
+    bmListAdd: function () { bmListAdd(); },
+    handleIconUpload: function (el) { handleIconUpload(el); },
+    pickIconFile: function () { pickIconFile(); },
+    /* 其它 */
+    doSearch: function () { doSearch(); },
+    toggleEngine: function () { toggleEngine(); },
+  };
+
+  /**
+   * 按名字执行动作（白名单外的名字直接忽略）。
+   * @param {string} name
+   * @param {HTMLElement} el 触发元素
+   * @param {string|undefined} arg
+   * @sideEffect 取决于具体动作
+   */
+  function dispatchAction(name, el, arg) {
+    const fn = ACTIONS[name];
+    if (!fn) return;
+    fn(el, arg);
+  }
+
+  /** 从事件目标向上找带指定 data 属性的元素 */
+  function delegateTarget(e, attr) {
+    const t = e.target;
+    return (t && t.closest) ? t.closest('[' + attr + ']') : null;
+  }
+
+  /* ---------- 分发器（每类事件只有一个文档级监听） ---------- */
+  document.addEventListener('click', function (e) {
+    const el = delegateTarget(e, 'data-action');
+    if (el) dispatchAction(el.dataset.action, el, el.dataset.arg);
+  });
+  document.addEventListener('input', function (e) {
+    const el = delegateTarget(e, 'data-input');
+    if (el) dispatchAction(el.dataset.input, el, el.dataset.valueArg !== undefined ? el.value : undefined);
+  });
+  document.addEventListener('change', function (e) {
+    const el = delegateTarget(e, 'data-change');
+    if (el) dispatchAction(el.dataset.change, el);
+  });
+  /* blur 不冒泡，必须用捕获阶段 */
+  document.addEventListener('blur', function (e) {
+    const el = delegateTarget(e, 'data-blur');
+    if (el) dispatchAction(el.dataset.blur, el);
+  }, true);
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    const el = delegateTarget(e, 'data-enter');
+    if (!el) return;
+    // data-enter-prevent 表示"回车提交、Shift+回车换行"
+    if (el.dataset.enterPrevent !== undefined) {
+      if (e.shiftKey) return;
+      e.preventDefault();
+    }
+    dispatchAction(el.dataset.enter, el);
+  });
+
+let _ptrDown = null;
+document.addEventListener('mousedown', e => { _ptrDown = e.target; });
+/* 重构前这里有 6 段各自为政的关闭判断、外加 3 处独立的文档级监听；
+   现在统一交给 §4 PopupManager（规则表见上面的登记表）。 */
+document.addEventListener('click', e => {
+  PopupManager.handleOutsideClick(e, _ptrDown);
+  _ptrDown = null;
+});
+
+/**
+ * 关闭指定浮层。
+ * @param {string} id
+ * @sideEffect 改 DOM；由 PopupManager 触发状态刷新
+ */
+function closePopup(id) { PopupManager.close(id); }
+
+/** 关闭全部表单类浮层（mottoPopup / bmPopup）。 */
+function closeAllPopups() { PopupManager.closeGroup('form'); }
+
+function updatePopupState() {
+  var wasOpen = document.documentElement.classList.contains('popup-open');
+  var open = document.querySelector('.popup.show, .settings-popup.show:not(#lunarPopup), .bm-list-popup.show');
+  document.documentElement.classList.toggle('popup-open', !!open);
+  var isOpen = document.documentElement.classList.contains('popup-open');
+  if (!wasOpen && isOpen) clearTimeout(_minimalTimer);
+  else if (wasOpen && !isOpen && document.documentElement.classList.contains('minimal-show')) startMinimalIdle();
+}
+/** 是否已排队一次浮层状态刷新（把一次点击里的几十次调用合并成每帧最多一次） */
+var _popupStateQueued = false;
+
+/**
+ * 标记浮层状态发生变化；同一帧内多次调用只会真正刷新一次。
+ * @sideEffect 排队一次 updatePopupState（下一帧执行）
+ */
+function markPopupChange() {
+  if (_popupStateQueued) return;
+  _popupStateQueued = true;
+  requestAnimationFrame(function () { _popupStateQueued = false; updatePopupState(); });
+}
+
+/**
+ * 打开格言编辑弹窗并回填当前格言。
+ * @sideEffect 关掉其它表单浮层与设置菜单；定位；打开浮层
+ */
+function editMotto() {
+  closeAllPopups();
+  PopupManager.close('settingsPopup');
+  document.getElementById('mottoInput').value = document.getElementById('motto').textContent;
+  const popup = document.getElementById('mottoPopup');
+  const btn = document.querySelector('.settings-btn');
+  const br = btn.getBoundingClientRect();
+  popup.style.position = 'fixed';
+  popup.style.top = (br.bottom + 8) + 'px';
+  popup.style.left = Math.max(8, br.right - 380) + 'px';
+  popup.style.right = 'auto';
+  popup.style.transform = 'none';
+  document.getElementById('mottoPopup').style.transformOrigin = 'right top';
+  requestAnimationFrame(function(){ PopupManager.open('mottoPopup'); });
+}
+/**
+ * 保存格言（单行显示，空值回落到默认格言）。
+ * @sideEffect 改 DOM（#motto 文本）；写 localStorage（KEYS.MOTTO）
+ */
+function saveMotto() {
+  var val = document.getElementById('mottoInput').value.trim();
+  if (!val) val = DEFAULTS.mottoFallback;
+  // Replace newlines with spaces for single-line display
+  document.getElementById('motto').textContent = val.replace(/\n/g, ' ');
+  Store.setSetting('mottoText', val);
+}
+
+  /* ------------------------------------------------------------------------
+   * §2 领域 · 图片压缩（纯计算，不碰存储）
+   * 缺陷修复：旧实现把上传原图直接转 dataURL 存进 localStorage。一张 2MB 的
+   *           照片 base64 后约 2.7MB，叠加聊天记录后必然超出 5MB 配额，且当时
+   *           没有任何 try/catch —— 结果是"点了更换壁纸，什么也没发生"。
+   * ---------------------------------------------------------------------- */
+
+  /**
+   * 把图片文件等比缩放后编码为 dataURL。
+   * @param {File} file 用户选择的图片
+   * @param {number} maxSize 最长边像素上限
+   * @param {string} mime 'image/jpeg' | 'image/png' | 'image/webp'
+   * @param {number} [quality] 0~1，仅对 jpeg/webp 有效
+   * @returns {Promise<string>} dataURL
+   * @sideEffect 无（仅使用离屏 canvas）
+   */
+  function compressImage(file, maxSize, mime, quality) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('读取文件失败')); };
+      reader.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error('不是有效的图片文件')); };
+        img.onload = function () {
+          var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+          var scale = Math.min(1, maxSize / Math.max(w, h));
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
+          var cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          try { resolve(cv.toDataURL(mime, quality)); }
+          catch (e) { reject(e); }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * 估算 dataURL 的原始字节数。
+   * @param {string} url
+   * @returns {number}
+   */
+  function dataUrlBytes(url) {
+    var i = url.indexOf(',');
+    return i < 0 ? url.length : Math.round((url.length - i - 1) * 3 / 4);
+  }
+
+  /**
+   * 字节数转可读文本。
+   * @param {number} b
+   * @returns {string}
+   */
+  function humanSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB'; }
+
+  /* ------------------------------------------------------------------------
+   * §2 领域 + §4 视图 · 壁纸
+   * 重构说明：同一套"清旧 bg 类 → 加新类 / 应用自定义图 / 启停粒子特效"的逻辑
+   *           此前散在 5 处（applyWallpaper、上传回调、启动 IIFE、resetDefaults、
+   *           showWpPicker 的状态反查）。现统一为下面 4 个入口 + 1 个取值函数，
+   *           类名表来自 §0 WALLPAPERS：新增壁纸只需在 §0 登记一行。
+   * ---------------------------------------------------------------------- */
+
+  /**
+   * 读取当前壁纸标识。
+   * @returns {string} 预设类型名；存在自定义图且无预设类型时返回 'custom'
+   * @sideEffect 只读 localStorage（KEYS.BG / KEYS.BG_TYPE）
+   */
+  function currentBgType() {
+    return Store.setting('bgType') || (Store.raw(KEYS.BG) ? 'custom' : DEFAULTS.bgType);
+  }
+
+  /**
+   * 清空 #bg 上全部预设壁纸类与内联背景，返回该元素。
+   * @returns {HTMLElement}
+   * @sideEffect 改 DOM
+   */
+  function bgClear() {
+    var bg = document.getElementById('bg');
+    BG_CLASSES.forEach(function (c) { bg.classList.remove(c); });
+    bg.style.background = ''; bg.style.backgroundSize = ''; bg.style.animation = '';
+    return bg;
+  }
+
+  /**
+   * 应用预设壁纸（不处理自定义图，也不启停特效）。
+   * @param {string} type §0 WALLPAPERS 的键
+   * @returns {string} 实际生效的类型；未知类型返回 ''
+   * @sideEffect 改 DOM
+   */
+  function bgApplyType(type) {
+    var w = WALLPAPERS[type];
+    var bg = bgClear();
+    if (!w) return '';
+    bg.classList.add(w.cls);
+    return type;
+  }
+
+  /**
+   * 应用自定义图片壁纸。
+   * @param {string} url dataURL 或图片地址
+   * @sideEffect 改 DOM（写内联 background）
+   */
+  function bgApplyImage(url) {
+    var bg = bgClear();
+    bg.style.background = 'url(' + url + ') center/cover no-repeat';
+    bg.style.animation = 'none';
+  }
+
+  /**
+   * 按壁纸类型启停粒子特效（雨滴 / 萤火；其余类型一律停止）。
+   * @param {string} type
+   * @sideEffect 启停 rAF 循环
+   */
+  function bgRunEffect(type) {
+    if (type === 'rain') { stopFirefly(); startRain(); }
+    else if (type === 'firefly') { stopRain(); startFirefly(); }
+    else { stopRain(); stopFirefly(); }
+  }
+
+  /**
+ * 切换壁纸（预设或自定义图片）。
+ * @param {string} type 'custom' 或 §0 WALLPAPERS 的键
+ * @sideEffect 写存储（KEYS.BG / KEYS.BG_TYPE）；改 DOM；可能启停粒子；弹 toast
+ */
+function applyWallpaper(type) {
+  if (type === 'custom') { document.getElementById('wallpaperInput').click(); return; }
+  bgApplyType(type);
+  Store.write(KEYS.BG, '');
+  Store.setSetting('bgType', type);
+  bgRunEffect(type);
+  refreshWallpaperOpts();
+  showToast('壁纸已更换');
+}
+
+/**
+ * 同步壁纸选项的选中态。
+ * 说明：选中依据是 HTML 上的 data-wp 属性；重构前靠解析 onclick 字符串，
+ *       改一次文案就会静默失效。
+ * @sideEffect 改 DOM；触发 markPopupChange
+ */
+function refreshWallpaperOpts() {
+  var t = currentBgType();
+  document.querySelectorAll('.wp-opt, .wp-pick-opt').forEach(function (o) {
+    o.classList.toggle('active', o.dataset.wp === t);
+  });
+  markPopupChange();
+}
+/**
+ * 更换自定义壁纸：压缩 → 体积校验 → 入库 → 应用。
+ * 缺陷修复：旧实现不压缩、不校验体积、不处理写入失败。
+ * @sideEffect 写 localStorage（KEYS.BG / KEYS.BG_TYPE）；改 DOM
+ */
+document.getElementById('wallpaperInput').addEventListener('change', function (e) {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  showToast('正在处理图片…');
+  compressImage(f, CONFIG.WALLPAPER_MAX_PX, 'image/jpeg', CONFIG.WALLPAPER_QUALITY)
+    .then(function (url) {
+      const bytes = dataUrlBytes(url);
+      if (bytes > CONFIG.WALLPAPER_MAX_BYTES) { showToast('图片过大（' + humanSize(bytes) + '），请换一张'); return; }
+      if (!Store.write(KEYS.BG, url)) { showToast('保存失败：本地存储空间不足'); return; }
+      Store.setSetting('bgType', '');
+      bgApplyImage(url);
+      showToast('✓ 壁纸已更换（' + humanSize(bytes) + '）');
+    })
+    .catch(function () { showToast('图片处理失败，请换一张图片'); });
+});
+/**
+ * §5 启动：按存档恢复壁纸。
+ * 注：此处由"直接叠加类"改为"先清后加"，视觉结果一致（旧写法会同时留下
+ *     #bg 的初始类 bg-orca，属历史遗留）。
+ * @sideEffect 改 DOM；可能延迟启动粒子
+ */
+(function initBackground() {
+  var saved = Store.raw(KEYS.BG), type = Store.setting('bgType');
+  if (saved && !type) { bgApplyImage(saved); return; }
+  var t = type || DEFAULTS.bgType;
+  bgApplyType(t);
+  if (t === 'rain' || t === 'firefly') setTimeout(function () { bgRunEffect(t); }, 100);
+})();
+
+let currentEngine = 'https://www.bing.com/search?q=';
+function toggleEngine() {
+  var dd = document.getElementById('engineDropdown');
+  if (PopupManager.isOpen('engineDropdown')) { PopupManager.close('engineDropdown'); return; }
+  var area = document.querySelector('.search-area');
+  var btn = document.getElementById('engineBtn');
+  var ar = area.getBoundingClientRect(), br = btn.getBoundingClientRect();
+  dd.style.top = (br.bottom - ar.top + 4) + 'px';
+  dd.style.left = (br.left - ar.left) + 'px';
+  requestAnimationFrame(function(){ PopupManager.open('engineDropdown'); });
+}
+document.querySelectorAll('.engine-dropdown .opt').forEach(o => {
+  o.addEventListener('click', e => {
+    e.stopPropagation();
+    document.querySelectorAll('.engine-dropdown .opt').forEach(x => x.classList.remove('active'));
+    o.classList.add('active'); markPopupChange();
+    currentEngine = o.dataset.e;
+    document.getElementById('engineLabel').textContent = o.textContent.trim().split(' ')[0];
+	    const ic = o.querySelector('.eng-icon');
+	    if (ic) {
+		      var ec = ic.style.getPropertyValue('--ec');
+		      if (ec) {
+		        document.getElementById('engineLabel').style.setProperty('--ec', ec);
+		        var r = parseInt(ec.slice(1,3), 16), g = parseInt(ec.slice(3,5), 16), b = parseInt(ec.slice(5,7), 16);
+		        if (!isNaN(r)) document.querySelector('.search-wrap').style.setProperty('--search-shadow', 'rgba('+r+','+g+','+b+',0.35)');
+		      }
+	    }
+    PopupManager.close('engineDropdown');
+  });
+});
+function doSearch() { const q = document.getElementById('searchInput').value.trim(); if (q) window.open(currentEngine + encodeURIComponent(q), '_blank'); }
+
+/**
+ * 打开 / 关闭设置菜单（再次点击即关闭）。
+ * @sideEffect 关掉表单类浮层；定位；切换浮层显隐；刷新各选项选中态
+ */
+function toggleSettings() {
+  closeAllPopups();
+  var sp = document.getElementById('settingsPopup');
+  if (!PopupManager.isOpen('settingsPopup')) {
+    var btn = document.querySelector('.settings-btn');
+    var br = btn.getBoundingClientRect();
+    sp.style.position = 'fixed';
+    sp.style.top = (br.bottom + 8) + 'px';
+    sp.style.left = Math.max(8, br.right - 200) + 'px';
+    sp.style.right = 'auto';
+    PopupManager.open('settingsPopup');
+  } else {
+    PopupManager.close('settingsPopup');
+  }
+  refreshPrefsOpts();
+  refreshWallpaperOpts();
+  refreshColorOpts();
+}
+/**
+ * 设置卡片透明度（1~10 档）。
+ * @param {number|string} v 滑块值
+ * @sideEffect 写 localStorage（KEYS.OPACITY）；改 CSS 变量 --card-alpha；移动数值标签
+ * 说明：模糊程度自 V2.1.0 起由独立的 setCardBlur() 控制，不再与透明度联动。
+ */
+function setCardOpacity(v) {
+  v = Math.min(10, Math.max(1, parseInt(v, 10) || 1));
+  Store.setSetting('opacity', v);
+  var solid = (v - 1) / 9;
+  var alpha = (0.03 + solid * 0.87).toFixed(3);
+  document.documentElement.style.setProperty('--card-alpha', alpha);
+  var s = document.getElementById('opacitySlider');
+  if (s) {
+    s.value = String(v);
+    var fill = (solid * 100) + '%';
+    s.style.background = 'linear-gradient(to right, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.5) ' + fill + ', rgba(255,255,255,0.08) ' + fill + ', rgba(255,255,255,0.08) 100%)';
+  }
+  var valEl = document.getElementById('opacityVal');
+  if (valEl) {
+    valEl.textContent = v;
+    /* 百分比定位：滑块宽 W，拇指中心 = 10 + pct*(W-20)，20px 宽的标签 left 取 pct*(W-20) 即与之同心。
+       缺陷修复：旧写法按 offsetWidth 算 px，设置面板隐藏或展开动画中量到的宽度不可靠（常为 0 或旧值），
+       数字会跑到滑块外面；calc() 由浏览器按当前实际宽度结算，开关面板/改变窗口都不再错位。 */
+    valEl.style.left = 'calc((100% - 20px) * ' + solid + ')';
+  }
+}
+
+/**
+ * 设置玻璃模糊程度（1~10 档，统一作用于所有玻璃表面）。
+ * 档位映射：(v-1)/9 —— 1 = 完全清晰，10 = 设计满值，默认 9 ≈ 0.889（与重构前观感一致）。
+ * @param {number|string} v 1~10
+ * @sideEffect 写 localStorage（KEYS.BLUR）；改 CSS 变量 --card-blur-mul；移动数值标签
+ */
+function setCardBlur(v) {
+  v = Math.min(10, Math.max(1, parseInt(v, 10) || 1));
+  Store.setSetting('blur', v);
+  var pct = (v - 1) / 9;
+  document.documentElement.style.setProperty('--card-blur-mul', pct.toFixed(3));
+  var s = document.getElementById('blurSlider');
+  if (s) {
+    s.value = String(v);
+    var fill = (pct * 100) + '%';
+    s.style.background = 'linear-gradient(to right, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.5) ' + fill + ', rgba(255,255,255,0.08) ' + fill + ', rgba(255,255,255,0.08) 100%)';
+  }
+  var valEl = document.getElementById('blurVal');
+  if (valEl) {
+    valEl.textContent = v;
+    /* 同 setCardOpacity：百分比定位，避免隐藏/动画期间 offsetWidth 失真导致数字偏离滑块 */
+    valEl.style.left = 'calc((100% - 20px) * ' + pct + ')';
+  }
+}
+/**
+ * 通用开关：按行的 track id 找到注册表里的设置项并翻转。
+ * @param {HTMLElement} row 带 .toggle-track 的行元素
+ * @sideEffect 写 localStorage（§0 SETTINGS）；按开关名联动显隐（格言 / 图形）
+ */
+function toggleSwitch(row) {
+  var track = row.querySelector('.toggle-track');
+  track.classList.toggle('on');
+  var id = track.id;
+  var on = track.classList.contains('on');
+  var name = TOGGLE_IDS[id];
+  if (name) Store.setSetting(name, on);
+  if (id === 'toggleMotto') {
+    document.getElementById('motto').style.display = on ? '' : 'none';
+  }
+}
+// Minimal mode
+var _minimalTimer = null, _minimalHideDelay = CONFIG.MINIMAL_HIDE_DELAY_MS;
+function toggleMinimal(row) {
+  var track = row.querySelector('.toggle-track');
+  track.classList.toggle('on');
+  var on = track.classList.contains('on');
+  Store.setSetting('minimal', on);
+  document.documentElement.classList.toggle('minimal', on);
+  if (!on) { clearTimeout(_minimalTimer); hideMinimalElements(); }
+}
+function applyMinimal(on) {
+  document.documentElement.classList.toggle('minimal', on);
+  if (on) startMinimalIdle();
+  else { clearTimeout(_minimalTimer); document.documentElement.classList.remove('minimal-show','anim-out'); }
+}
+function showMinimalElements() {
+  if (!document.documentElement.classList.contains('minimal')) return;
+  var cl = document.documentElement.classList;
+  cl.remove('anim-out');
+  cl.add('minimal-show');
+  startMinimalIdle();
+}
+function hideMinimalElements() {
+  var cl = document.documentElement.classList;
+  if (!cl.contains('minimal-show')) return;
+  if (document.querySelector('.popup.show, .settings-popup.show:not(#lunarPopup), .bm-list-popup.show')) return;
+  cl.add('anim-out');
+  clearTimeout(_minimalTimer);
+  _minimalTimer = setTimeout(function() {
+    cl.remove('minimal-show'); cl.remove('anim-out');
+    _minimalTimer = null;
+  }, 300);
+}
+function startMinimalIdle() {
+  clearTimeout(_minimalTimer);
+  _minimalTimer = setTimeout(hideMinimalElements, _minimalHideDelay);
+}
+
+function toggleWhiteSetting(row, key) {
+  var track = row.querySelector('.toggle-track');
+  track.classList.toggle('on');
+  var on = track.classList.contains('on');
+  var name = SETTING_BY_KEY[key];
+  if (name) Store.setSetting(name, on);
+  applyWhiteSetting(key, on);
+}
+function applyWhiteSetting(key, on) {
+  var M = { mc_whiteClock: ['clock','rgba(255,255,255,0.7)'], mc_whiteMotto: ['motto','rgba(255,255,255,0.5)'] };
+  var c = M[key]; if (!c) return;
+  document.getElementById(c[0]).style.color = on ? c[1] : '';
+}
+function toggleWhiteClock(row) { toggleWhiteSetting(row, KEYS.WHITE_CLOCK); }
+function toggleWhiteMotto(row) { toggleWhiteSetting(row, KEYS.WHITE_MOTTO); }
+function applyWhiteClock(on) { applyWhiteSetting(KEYS.WHITE_CLOCK, on); }
+function applyWhiteMotto(on) { applyWhiteSetting(KEYS.WHITE_MOTTO, on); }
+// Rain particle system — single-loop guard, half-rate rendering, zone-clear optimization
+var _rainRaf = null, _drops = null, _ripples = null;
+var _rTop, _rBot, _rL, _rR, _ripWrite, _ripCount, _ripMax, _frameSkip;
+var DROP_N = 26;
+function startRain() {
+  if (_rainRaf) return; // Guard: prevent double loops
+  var c = document.getElementById('rainCanvas');
+  if (!c) return;
+  c.style.display = 'block';
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  var ctx = c.getContext('2d');
+  _rTop = c.height * 0.34; _rBot = c.height * 0.88;
+  _rL = c.width * 3 / 8; _rR = c.width * 5 / 8;
+  _frameSkip = 0;
+  function rX() { return _rL + Math.random() * (_rR - _rL); }
+  function rY() { return _rTop + Math.random() * (_rBot - _rTop); }
+
+  _drops = new Array(DROP_N);
+  for (var i = 0; i < DROP_N; i++) {
+    var rnd = Math.random();
+    var heavy = rnd < 0.35, light = rnd > 0.75;
+    _drops[i] = { x: rX(), y: rY(), len: heavy ? 34 + Math.random() * 20 : (light ? 10 + Math.random() * 8 : 20 + Math.random() * 14), spd: heavy ? 9 : (light ? 4.5 : 5.4), w: heavy ? 2.2 : (light ? 1 : 1.4), a: heavy ? 0.6 : (light ? 0.35 : 0.45), h: heavy, l: light };
+  }
+
+  _ripMax = 80; _ripWrite = 0; _ripCount = 0;
+  _ripples = new Array(_ripMax);
+  for (var j = 0; j < _ripMax; j++) _ripples[j] = { x: 0, y: 0, w0: 0, mw: 0, life: 0, a: 0 };
+
+  var _ripThrottle = 0;
+  function spawnRipple(x, dropW) {
+    if (++_ripThrottle % 2 !== 0) return;
+    var r = _ripples[_ripWrite];
+    var baseW = dropW * 1.5;
+    var short = Math.random() < 0.4;
+    r.x = x; r.y = c.height * 0.95; r.w0 = baseW;
+    r.mw = short ? baseW * 6 : baseW * 25;
+    r.life = (short ? 15 : 30) + (Math.random() * 15) | 0;
+    r.a = short ? 0.3 : (0.35 + Math.random() * 0.25);
+    _ripWrite = (_ripWrite + 1) % _ripMax;
+    if (_ripCount < _ripMax) _ripCount++;
+  }
+
+  var _heavyDrops = [], _lightDrops = [], _normalDrops = [];
+
+  /**
+   * 按批次画雨滴（同样式只切一次 canvas 状态）。
+   * @param {Array} arr 雨滴数组
+   * @param {string} color 描边色
+   * @param {number} width 线宽
+   */
+  function drawBatch(arr, color, width) {
+    if (!arr.length) return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    for (var i = 0; i < arr.length; i++) {
+      var d = arr[i];
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x, d.y + d.len);
+    }
+    ctx.stroke();
+  }
+
+  function rebuildDropBatches() {
+    _heavyDrops.length = _lightDrops.length = _normalDrops.length = 0;
+    for (var i = 0; i < DROP_N; i++) {
+      var d = _drops[i];
+      if (d.h) _heavyDrops.push(d);
+      else if (d.l) _lightDrops.push(d);
+      else _normalDrops.push(d);
+    }
+  }
+  function draw() {
+    _rainRaf = requestAnimationFrame(draw);
+    if (document.hidden) return;
+    _frameSkip++;
+    if (_frameSkip > 3600) { _frameSkip = 0; _ripCount = 0; _ripWrite = 0; for (var rr = 0; rr < _ripMax; rr++) _ripples[rr].life = 0; }
+    if (_frameSkip % 2 !== 0) return;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.lineCap = 'round';
+    // 按样式分批画（drawBatch 已提到 draw 外面，避免每帧新建闭包）
+    drawBatch(_heavyDrops, 'rgba(140,220,240,0.6)', 2.2);
+    drawBatch(_normalDrops, 'rgba(140,220,240,0.45)', 1.4);
+    drawBatch(_lightDrops, 'rgba(140,220,240,0.35)', 1.0);
+    // Update & respawn
+    for (var i = 0; i < DROP_N; i++) {
+      var d = _drops[i];
+      d.y += d.spd;
+      if (d.y >= _rBot) {
+        spawnRipple(d.x, d.w);
+        d.y = _rTop; d.x = rX();
+        d.len = d.h ? (34 + Math.random() * 20) : (d.l ? (10 + Math.random() * 8) : (20 + Math.random() * 14));
+        d.spd = d.h ? (7.2 + Math.random() * 5.4) : (d.l ? 4.5 : (3.6 + Math.random() * 3.6));
+      }
+    }
+    rebuildDropBatches();
+    // Ripples — single fillStyle
+    var invMax = 1 / 55;
+    ctx.fillStyle = 'rgba(140,220,220,0)'; // placeholder
+    for (var k = 0; k < _ripCount; k++) {
+      var rp = _ripples[k];
+      if (rp.life <= 0) continue;
+      var p = 1 - rp.life * invMax;
+      var w = rp.w0 + (rp.mw - rp.w0) * p;
+      var alpha = rp.a * rp.life * invMax;
+      ctx.fillStyle = 'rgba(140,220,220,' + alpha + ')';
+      ctx.fillRect(rp.x - w * 0.5, rp.y - 1.5, w, 3);
+      rp.life--;
+    }
+  }
+  rebuildDropBatches();
+  draw();
+}
+// Firefly system — boolean alive model, visibility pause, 2min reset
+var _flyRaf = null, _flies = null, _flyMax = 40, _flyFrame = 0;
+/** 萤火批处理缓冲：每 4 个数一簇（x, y, 尺寸, 透明度），复用以免每帧产生上百个临时对象 */
+var _flyBufSmall = [], _flyBufMed = [], _flyBufLarge = [];
+function startFirefly() {
+  if (_flyRaf) return;
+  var c = document.getElementById('rainCanvas');
+  if (!c) return;
+  c.style.display = 'block';
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  var ctx = c.getContext('2d');
+  _flyFrame = 0;
+  _flies = new Array(_flyMax);
+  for (var i = 0; i < _flyMax; i++) _flies[i] = { alive: false, x: 0, y: 0, s: 0, a: 0, life: 0, vx: 0, vy: 0, ph: 0, spd: 0 };
+  var spawnBot = c.height * 0.8; // spawn in bottom 1/5
+
+  function spawnFly() {
+    for (var i = 0; i < _flyMax; i++) {
+      if (!_flies[i].alive) {
+        var f = _flies[i];
+        f.alive = true; f.x = Math.random() * c.width; f.y = spawnBot + Math.random() * (c.height - spawnBot);
+        f.s = 1 + Math.random() * 2; f.a = 0; f.life = (40 + Math.random() * 60) | 0;
+        f.vx = (Math.random() - 0.5) * 1.5; f.vy = (Math.random() - 0.5) * 1.2;
+        f.ph = Math.random() * Math.PI * 2; f.spd = 0.04 + Math.random() * 0.05;
+        return;
+      }
+    }
+  }
+
+  function drawFlies() {
+    _flyRaf = requestAnimationFrame(drawFlies);
+    if (document.hidden) return;
+    _flyFrame++;
+    if (_flyFrame % 3 !== 0) return;
+    if (_flyFrame > 2400) { _flyFrame = 0; for (var r = 0; r < _flyMax; r++) _flies[r].alive = false; }
+    if (Math.random() < 0.2) spawnFly();
+    ctx.clearRect(0, 0, c.width, c.height);
+    // Batch by size (small/med/large) to reduce fillStyle changes
+    // 复用缓冲：清空而不重建
+    var small = _flyBufSmall, med = _flyBufMed, large = _flyBufLarge;
+    small.length = 0; med.length = 0; large.length = 0;
+    for (var i = 0; i < _flyMax; i++) {
+      var f = _flies[i];
+      if (!f.alive) continue;
+      f.life--;
+      if (f.life <= 0) { f.alive = false; continue; }
+      f.a = f.life > 40 ? Math.min(0.8, f.a + 0.06) : Math.max(0, f.a - 0.02);
+      f.ph += f.spd;
+      f.vx += (Math.random() - 0.5) * 0.3; f.vy += (Math.random() - 0.5) * 0.2;
+      f.vx *= 0.96; f.vy *= 0.96;
+      f.x += f.vx; f.y += f.vy;
+      var alpha = f.a * (0.4 + 0.6 * Math.abs(Math.sin(f.ph * 3)));
+      if (alpha < 0.02) continue;
+      if (f.s < 1.5) small.push(f.x, f.y, f.s, alpha);
+      else if (f.s < 2.2) med.push(f.x, f.y, f.s, alpha);
+      else large.push(f.x, f.y, f.s, alpha);
+    }
+    function drawBatch(arr) {
+      if (!arr.length) return;
+      // 每个批次用首簇的尺寸与透明度（与重构前一致）
+      var sz = arr[2];
+      ctx.fillStyle = 'rgba(220,255,200,' + arr[3] + ')';
+      for (var i = 0; i < arr.length; i += 4) {
+        ctx.fillRect(arr[i] - sz * 0.5, arr[i + 1] - sz * 0.5, sz, sz);
+      }
+    }
+    drawBatch(small); drawBatch(med); drawBatch(large);
+  }
+  drawFlies();
+}
+function stopFirefly() {
+  if (_flyRaf) { cancelAnimationFrame(_flyRaf); _flyRaf = null; }
+  _flies = null;
+  var c = document.getElementById('rainCanvas');
+  if (c && !_rainRaf) c.style.display = 'none';
+}
+
+function stopRain() {
+  if (_rainRaf) { cancelAnimationFrame(_rainRaf); _rainRaf = null; }
+  _drops = null; _ripples = null;
+  var c = document.getElementById('rainCanvas');
+  if (c && !_flyRaf) c.style.display = 'none';
+}
+window.addEventListener('resize', function() {
+  var c = document.getElementById('rainCanvas');
+  if (!c || c.style.display === 'none') return;
+  c.width = window.innerWidth; c.height = window.innerHeight;
+  _rTop = c.height * 0.34; _rBot = c.height * 0.88;
+  _rL = c.width * 3 / 8; _rR = c.width * 5 / 8;
+});
+
+function initWhiteToggles() {
+  var wc = Store.setting('whiteClock');
+  if (!wc) document.getElementById('toggleWhiteClock').classList.remove('on');
+  applyWhiteClock(wc);
+  var wm = Store.setting('whiteMotto');
+  if (!wm) document.getElementById('toggleWhiteMotto').classList.remove('on');
+  applyWhiteMotto(wm);
+}
+
+function initToggles() {
+  var tm = document.getElementById('toggleMotto');
+  if (!Store.setting('motto')) { tm.classList.remove('on'); document.getElementById('motto').style.display = 'none'; }
+  var tmin = document.getElementById('toggleMinimal');
+  if (tmin && Store.setting('minimal')) { tmin.classList.add('on'); applyMinimal(true); }
+}
+function resetDefaults() {
+  // 文字颜色: 黑色
+  Store.setSetting('font', DEFAULTS.font);
+  Store.remove(KEYS.CUSTOM_COLOR);
+  clearCustomColor();
+  document.getElementById('customColorInput').value = '#FFFFFF';
+  document.getElementById('colorPreview').style.background = '#FFFFFF';
+  document.getElementById('customExpand').classList.remove('show'); markPopupChange();
+  document.documentElement.classList.remove('gray-text');
+  document.documentElement.classList.add('black-text');
+  // 透明卡片度: 2
+  Store.setSetting('opacity', DEFAULTS.opacity);
+  var s = document.getElementById('opacitySlider');
+  if (s) { s.value = String(DEFAULTS.opacity); setCardOpacity(DEFAULTS.opacity); }
+  // 模糊程度: 90%
+  Store.setSetting('blur', DEFAULTS.blur);
+  var bs = document.getElementById('blurSlider');
+  if (bs) { bs.value = String(DEFAULTS.blur); setCardBlur(DEFAULTS.blur); }
+  // 收藏偏好: 自动补位 + 纯净模式
+  savePrefs({ compact: true, detailed: false });
+  // 壁纸: 恢复默认（§0 DEFAULTS.bgType）
+  stopRain(); stopFirefly();
+  bgApplyType(DEFAULTS.bgType);
+  Store.write(KEYS.BG, '');
+  Store.setSetting('bgType', DEFAULTS.bgType);
+  // Reset toggles
+  Store.setSetting('motto', true);
+  document.getElementById('motto').style.display = '';
+  var tm = document.getElementById('toggleMotto');
+  if (tm) tm.classList.add('on');
+  Store.setSetting('autoMsg', false);   // V2.2 自动消息已移除，恢复默认时一并清掉旧存档
+  var tmin = document.getElementById('toggleMinimal');
+  if (tmin) { tmin.classList.remove('on'); Store.setSetting('minimal', false); applyMinimal(false); }
+  var tw = document.getElementById('toggleWhiteClock');
+  if (tw) { tw.classList.add('on'); Store.setSetting('whiteClock', true); applyWhiteClock(true); }
+  var wm = document.getElementById('toggleWhiteMotto');
+  if (wm) { wm.classList.add('on'); Store.setSetting('whiteMotto', true); applyWhiteMotto(true); }
+  showToast('已恢复全局默认设置');
+}
+/**
+ * 同步文字颜色选项的选中态。
+ * 说明：选中依据是 HTML 上的 data-color 属性，不再解析 onclick 字符串。
+ * @param {string} m 'white' | 'gray' | 'black' | 'custom'
+ * @sideEffect 改 DOM
+ */
+function markActiveColor(m) {
+  document.querySelectorAll('.color-opt').forEach(function (o) {
+    o.classList.toggle('active', o.dataset.color === m);
+  });
+}
+
+/**
+ * 按存储值刷新颜色选中态。
+ * @sideEffect 改 DOM；触发 markPopupChange
+ */
+function refreshColorOpts() {
+  markActiveColor(Store.setting('font'));
+  markPopupChange();
+}
+(function initCardEffects(){
+  var s = document.getElementById('opacitySlider');
+  if (s) {
+    s.value = String(Store.setting('opacity'));
+    setCardOpacity(s.value);
+  }
+  var b = document.getElementById('blurSlider');
+  if (b) {
+    var bv = Number(Store.setting('blur'));
+    if (bv > 10) { bv = Math.max(1, Math.round(bv / 10)); Store.setSetting('blur', bv); }  // 兼容 V2.1.0 早期的 0~100 旧值
+    b.value = String(bv);
+    setCardBlur(bv);
+  }
+})();
+
+// ===== §4 视图层 · 通用 UI 反馈 =====
+let tt;
+/**
+ * 顶部提示条。
+ * @param {string} m 文案
+ * @sideEffect 改 DOM；CONFIG.TOAST_MS 后自动隐藏
+ */
+function showToast(m) { const e = document.getElementById('toast'); e.textContent = m; e.style.display='block'; clearTimeout(tt); tt = setTimeout(()=>e.style.display='none',CONFIG.TOAST_MS); }
+
+/**
+ * 刷新时钟文本与悬停日期。
+ * @sideEffect 改 DOM（#clock 文本与 data-date）
+ */
+function updateClock() {
+  const d = new Date();
+  var clk = document.getElementById('clock');
+  clk.textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  // Hover tooltip: date + weekday
+  var wd = ['日','一','二','三','四','五','六'];
+  clk.setAttribute('data-date', d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 星期'+wd[d.getDay()]);
+}
+
+// ===== §2 领域层 · 农历与干支换算（纯函数，无 DOM 依赖） =====
+// Constants embedded inline above (window.LUNAR_CONSTANTS)
+var GAN = window.LUNAR_CONSTANTS?.GAN || [];
+var ZHI = window.LUNAR_CONSTANTS?.ZHI || [];
+var SHENGXIAO = window.LUNAR_CONSTANTS?.SHENGXIAO || [];
+var LMON = window.LUNAR_CONSTANTS?.LMON || [];
+var LDAY = window.LUNAR_CONSTANTS?.LDAY || [];
+var SHICHEN = window.LUNAR_CONSTANTS?.SHICHEN || [];
+var SHICHEN_RANGE = window.LUNAR_CONSTANTS?.SHICHEN_RANGE || [];
+var _lunarFull = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { dateStyle:'full' });
+/* 农历/文本的具体实现都在 §2 Domain 中；此处不再保留同名薄封装（P6 清理，已无调用方） */
+
+/** 农历弹窗的刷新定时器与外部点击监听（单例，避免重复打开叠加） */
+var _lunarTimer = null;
+
+/**
+ * 关闭农历弹窗，并清理定时器与外部点击监听。
+ * @sideEffect 改 DOM；清理定时器与事件监听
+ */
+function closeLunarPopup() {
+  if (_lunarTimer) { clearInterval(_lunarTimer); _lunarTimer = null; }
+  PopupManager.close('lunarPopup');
+}
+
+/**
+ * 渲染农历弹窗内容并定位到时钟下方。
+ * @param {Date} d 基准时间
+ * @returns {number} 当前时辰序号（0~11），供定时器比对是否需要刷新
+ * @sideEffect 改 DOM 文本、内联定位与 class
+ */
+function renderLunar(d) {
+  var info = Domain.Lunar.snapshot(d);
+  document.getElementById('lunarGanzhi').textContent = info.yearName + info.zodiac + '年';
+  // 缺陷修复：旧实现在日期与节气之间留了一个多余的下划线占位符
+  document.getElementById('lunarDate').textContent = info.month + info.day + '  ' + info.solarTerm;
+  document.getElementById('lunarHour').textContent = info.shichen + ' (' + info.shichenRange + ')';
+  var popup = document.getElementById('lunarPopup');
+  var rect = document.getElementById('clock').getBoundingClientRect();
+  popup.style.position = 'fixed';
+  popup.style.top = Math.max(8, rect.top - 90) + 'px';
+  popup.style.left = Math.max(8, rect.left + rect.width / 2 - 110) + 'px';
+  requestAnimationFrame(function () { PopupManager.open('lunarPopup'); });
+  return info.shichenIndex;
+}
+
+/**
+ * 打开 / 关闭农历弹窗（再次点击时钟即关闭）。
+ * 缺陷修复：旧实现每次打开都新建一个 setInterval 和 document 监听，外部点击不
+ *          关闭时重复点击时钟会不断叠加，形成定时器泄漏；现在为单例并统一清理。
+ * @sideEffect 改 DOM；创建/清理定时器与事件监听
+ */
+function openLunarPopup() {
+  if (PopupManager.isOpen('lunarPopup')) { closeLunarPopup(); return; }
+  var base = new Date();
+  var si = renderLunar(base);
+  _lunarTimer = setInterval(function () {
+    var nd = new Date();
+    if (nd.getDate() !== base.getDate()) { closeLunarPopup(); openLunarPopup(); return; }  // 跨天重算
+    var nsi = Domain.Lunar.shichenIndex(nd);
+    if (nsi !== si) { si = nsi; renderLunar(nd); }                                        // 时辰变化时刷新
+  }, 60000);
+}
+// ===== §5 应用层 · 启动序列（P3 起收敛为唯一的 App.bootstrap） =====
+document.addEventListener('DOMContentLoaded', () => {
+  Store.onStorageError(function () { showToast('存储写入失败：空间已满或浏览器禁用了本地存储'); });
+  if (Store.setting('bgType') === 'rain') startRain();
+  if (Store.setting('bgType') === 'firefly') startFirefly();
+  initCustomColor();
+  initWhiteToggles();
+  initToggles();
+  updateClock();
+  setInterval(updateClock, 10000);
+  // Init motto
+  var mt = document.getElementById('motto');
+  if (mt) {
+    mt.textContent = Store.setting('mottoText');
+    mt.style.opacity = '';
+  }
+  // Init card/text opacity
+  var opv = String(Store.setting('opacity'));
+  var ops = document.getElementById('opacitySlider');
+  if (ops) { ops.value = opv; setCardOpacity(opv); }
+  document.querySelector('.search-wrap').style.setProperty('--search-shadow', 'rgba(66,133,244,0.35)');
+  // Visibility change: pause particles when tab hidden
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) { stopRain(); stopFirefly(); }
+    else {
+      if (Store.setting('bgType') === 'rain') startRain();
+      if (Store.setting('bgType') === 'firefly') startFirefly();
+    }
+  });
+});
+
+// Preferences（键名统一到 §0 KEYS.PREFS）
+function getPrefs() {
+  return Store.json(KEYS.PREFS, {});
+}
+function savePrefs(p) { Store.write(KEYS.PREFS, JSON.stringify(p)); }
+function isCompact() { return getPrefs().compact !== false; }
+function isDetailed() { return getPrefs().detailed === true; }
+function setDisplayMode(v) {
+  const p = getPrefs();
+  p.detailed = v;
+  savePrefs(p);
+  refreshPrefsOpts();
+}
+function setCompactMode(v) {
+  const p = getPrefs();
+  p.compact = v;
+  savePrefs(p);
+  if (v) compactAllBookmarks();
+  refreshPrefsOpts();
+}
+function compactAllBookmarks() {
+  saveBookmarks(Domain.Bookmarks.compact(getBookmarks()));
+}
+function refreshPrefsOpts() {
+  const opts = document.querySelectorAll('.prefs-opt');
+  const cur = isCompact();
+  const det = isDetailed();
+  if (opts[0]) opts[0].classList.toggle('active', cur);
+  if (opts[1]) opts[1].classList.toggle('active', !cur);
+  if (opts[2]) opts[2].classList.toggle('active', !det);
+  if (opts[3]) opts[3].classList.toggle('active', det);
+}
+
+// ===== §1 状态层 + §4 视图层 · 收藏（存储读写 + Dock 渲染） =====
+const BM_TOTAL = CONFIG.BM_TOTAL;      // 收藏槽位总数（来源 §0）
+const BM_VISIBLE = CONFIG.BM_VISIBLE;  // Dock 可见槽位数（来源 §0）
+var _bmSkipBarClose = false;
+/** 数据损坏只提示一次，避免每次读取都弹 toast */
+var _bmCorruptReported = false;
+
+/**
+ * 读取收藏槽位数组（定长 BM_TOTAL）。
+ * 容错策略（缺陷修复：旧实现只要长度≠20 就静默返回 20 个空槽 = 收藏全部消失）：
+ *   · 数组但长度不符 → 截断 / 补齐后回写修复，内容不丢
+ *   · 根本不是数组 → 返回空槽位并提示一次，**不删除原始数据**
+ * @returns {Array<object|null>} 长度恒为 BM_TOTAL
+ * @sideEffect 发现长度异常时回写修复后的数组
+ */
+function getBookmarks() {
+  const res = Domain.Bookmarks.normalizeSlots(Store.json(KEYS.BOOKMARKS, null), BM_TOTAL);
+  if (res.repaired) Store.write(KEYS.BOOKMARKS, JSON.stringify(res.slots));
+  if (res.corrupt && !_bmCorruptReported) {
+    _bmCorruptReported = true;
+    showToast('收藏数据格式异常，已按空槽位处理（原始数据未被删除）');
+  }
+  return res.slots;
+}
+
+/**
+ * 写入收藏槽位数组。
+ * @param {Array<object|null>} arr
+ * @returns {boolean} 是否写入成功（配额超限 / 存储被禁用为 false）
+ * @sideEffect 写 localStorage（KEYS.BOOKMARKS）
+ */
+function saveBookmarks(arr) { return Store.write(KEYS.BOOKMARKS, JSON.stringify(arr)); }
+
+/* 缺陷修复：右键唤出书签栏是既定交互，但旧实现连输入框里的原生菜单（粘贴、
+   拼写检查）也一并取消。现在在可编辑区域放行原生菜单。 */
+document.addEventListener('contextmenu', e => {
+  if (e.target.closest('input, textarea, [contenteditable="true"]')) return;
+  e.preventDefault(); showBookmarkBar(); showMinimalElements();
+});
+document.addEventListener('click', e => { if (_bmSkipBarClose) { _bmSkipBarClose = false; return; } if (!e.target.closest('.bookmark-bar') && !e.target.closest('.bm-list-popup') && !e.target.closest('#bmPopup')) animateCloseBookmarkBar(); var lunar = document.getElementById('lunarPopup'); if ((lunar && lunar.classList.contains('show')) || e.target.closest('.clock') || e.target.closest('#lunarPopup') || e.target.closest('.top-bar')) return; var anyPopup = document.querySelector('.popup.show, .settings-popup.show, .bm-list-popup.show'); if (anyPopup || e.target.closest('.popup') || e.target.closest('.settings-popup')) return; hideMinimalElements(); });
+/* Esc：先关最上层浮层；没有浮层时再收起书签栏（保留原有"Esc 收起"的手感） */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!PopupManager.handleKeydown(e)) closeBookmarkBar();
+});
+/**
+ * 唤出书签 Dock（右键触发）。
+ * @sideEffect 改 DOM；绑定 dock 放大监听；重置空闲计时；抬高格言
+ */
+function showBookmarkBar() {
+  const bar = document.getElementById('bookmarkBar');
+  // 如果正在播放消失动画，立即取消并显示
+  if (bar.classList.contains('anim-out')) {
+    bar.classList.remove('anim-out');
+    const inner = bar.querySelector('.bm-inner');
+    if (inner) { inner.style.animation = 'none'; void inner.offsetHeight; inner.style.animation = ''; }
+  }
+  if (document.getElementById('bmPopup').classList.contains('show')) return;
+  if (document.getElementById('bmListPopup').classList.contains('show')) { closeBmListPopup(); return; }
+  if (bar.classList.contains('show')) return;
+  renderBookmarkBar();
+  bar.classList.add('show'); markPopupChange();
+  document.addEventListener('mousemove', _bmMouseMove);
+  document.getElementById('motto').classList.add('up');
+  resetBmIdleTimer();
+}
+function closeBookmarkBar() {
+  resetBmIdleTimer(true);
+  document.removeEventListener('mousemove', _bmMouseMove);
+  document.getElementById('bookmarkBar').classList.remove('show'); markPopupChange();
+  document.getElementById('bookmarkBar').classList.remove('anim-out');
+  document.getElementById('bookmarkBar').classList.remove('anim-out-slow');
+  document.getElementById('motto').classList.remove('up');
+}
+let _bmIdleTimer = null;
+function resetBmIdleTimer(clearOnly) {
+  if (_bmIdleTimer) { clearTimeout(_bmIdleTimer); _bmIdleTimer = null; }
+  if (clearOnly) return;
+  const bar = document.getElementById('bookmarkBar');
+  if (bar && bar.classList.contains('show') && !bar.classList.contains('anim-out')) {
+    _bmIdleTimer = setTimeout(function() { animateCloseBookmarkBar(); }, 6600);
+  }
+}
+function animateCloseBookmarkBar(slow) {
+  const bar = document.getElementById('bookmarkBar');
+  if (!bar || !bar.classList.contains('show') || bar.classList.contains('anim-out')) return;
+  bar.classList.add('anim-out');
+  if (slow) bar.classList.add('anim-out-slow');
+  document.getElementById('motto').classList.remove('up');
+  setTimeout(function() { closeBookmarkBar(); }, slow ? 600 : 300);
+}
+function _bmMouseMove(e) {
+  if (e.target.closest('.bookmark-bar') || e.target.closest('.bm-list-popup') || e.target.closest('#bmPopup')) {
+    resetBmIdleTimer(true);
+  } else {
+    resetBmIdleTimer();
+  }
+}
+// Shared bookmark icon renderer
+function createBookmarkIcon(bm, className) {
+  const icon = document.createElement('div');
+  icon.className = className || 'bm-icon';
+  if (!bm) { icon.textContent = '+'; return icon; }
+  var bmIc = bm.icon;
+  if (bmIc && bmIc.indexOf('__char__') === 0) {
+    icon.textContent = bmIc.replace('__char__','');
+    icon.style.fontWeight = '700';
+  } else if (bmIc && bmIc.startsWith('http')) {
+    var name = bm.name || '';
+    var fc = name.charAt(0).toUpperCase() || '🔗';
+    icon.textContent = fc;
+    icon.style.fontWeight = '700';
+    var img = document.createElement('img');
+    img.style.cssText = 'border-radius:3px;object-fit:cover;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);';
+    img.onload = function() { icon.textContent = ''; icon.style.fontWeight = ''; icon.appendChild(img); };
+    img.onerror = function() {
+      if (!this._retry) {
+        this._retry = true;
+        try { var u = bm.url; if (!u.match(/^https?:\/\//i)) u = 'https://' + u; this.src = 'https://' + new URL(u).hostname + '/favicon.ico'; } catch(e) {}
+      }
+    };
+    img.src = bm.icon;
+  } else {
+    icon.textContent = bmIc || '\uD83D\uDD17';
+  }
+  return icon;
+}
+
+/**
+ * 渲染书签 Dock（可见槽位 + "更多"入口）并绑定 Dock 放大效果。
+ * @sideEffect 重建 DOM 子树；读取收藏与偏好
+ */
+function renderBookmarkBar() {
+  const bar = document.getElementById('bookmarkBar');
+  bar.innerHTML = '<div class="bm-inner"></div>';
+  const inner = bar.querySelector('.bm-inner');
+  const bms = getBookmarks();
+  const detailed = isDetailed();
+  bar.classList.toggle('detailed', detailed);
+  for (let i = 0; i < BM_VISIBLE; i++) {
+    const slot = document.createElement('div'); slot.className = 'bm-slot';
+    slot.dataset.idx = i;
+    const icon = createBookmarkIcon(bms[i], 'bm-icon');
+    if (bms[i]) slot.classList.add('has-link');
+    slot.appendChild(icon);
+    if (detailed && bms[i] && bms[i].name) {
+      const label = document.createElement('div');
+      label.className = 'bm-label';
+      label.textContent = bms[i].name;
+      slot.appendChild(label);
+    }
+    slot.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const bms = getBookmarks();
+      if (bms[i]) { window.open(bms[i].url, '_blank'); closeBookmarkBar(); }
+      else { openBmPopup(i); }
+    });
+    slot.addEventListener('contextmenu', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (getBookmarks()[i]) openBmPopup(i);
+    });
+    inner.appendChild(slot);
+  }
+  // "..." more button (always 11th slot)
+  var more = document.createElement("div"); more.className = "bm-slot bm-more-slot";
+  var moreIcon = document.createElement("div"); moreIcon.className = "bm-icon"; moreIcon.textContent = "\u22EF";
+  more.appendChild(moreIcon);
+  more.addEventListener("click", function(e) { e.stopPropagation(); openBmList(); });
+  inner.appendChild(more);
+  initDockEffect(inner);
+}
+function initDockEffect(inner) {
+  var maxScale = 1.5, radius = 100, baseSize = 44, raf = null;
+  var slots, centers;
+
+  function onMove(e) {
+    if (raf) return;
+    raf = requestAnimationFrame(function() {
+      raf = null;
+      var ir = inner.getBoundingClientRect(), mx = e.clientX - ir.left;
+      for (var i = 0; i < slots.length; i++) {
+        var dist = Math.abs(mx - centers[i]), scale = 1;
+        if (dist < radius) { var t = dist / radius; scale = 1 + (maxScale - 1) * (1 - t * t); }
+        var extra = (scale - 1) * baseSize / 2, s = slots[i].style;
+        s.transform = 'scale(' + scale + ')';
+        s.marginLeft = s.marginRight = extra + 'px';
+        s.zIndex = scale > 1.3 ? 3 : (scale > 1.05 ? 2 : 1);
+      }
+      inner.classList.add('expanded');
+    });
+  }
+  function onEnter() {
+    slots = inner.querySelectorAll('.bm-slot');
+    centers = [];
+    var ir = inner.getBoundingClientRect();
+    for (var i = 0; i < slots.length; i++) {
+      var sr = slots[i].getBoundingClientRect();
+      centers.push(sr.left + sr.width / 2 - ir.left);
+    }
+  }
+  function onLeave() {
+    for (var i = 0; i < slots.length; i++) {
+      var s = slots[i].style;
+      s.transform = s.marginLeft = s.marginRight = s.zIndex = '';
+    }
+    inner.classList.remove('expanded');
+  }
+
+  inner.removeEventListener('mousemove', onMove);
+  inner.removeEventListener('mouseenter', onEnter);
+  inner.removeEventListener('mouseleave', onLeave);
+  inner.addEventListener('mousemove', onMove);
+  inner.addEventListener('mouseenter', onEnter);
+  inner.addEventListener('mouseleave', onLeave);
+}
+
+let bmEditIdx = -1;
+var _bmFromList = false;
+var _bmCurrentIcon = '';
+/** 收藏管理列表中正在拖动的槽位下标（-1 = 没有拖动） */
+var _bmDragIdx = -1;
+
+/**
+ * 把收藏从 from 槽位移到 to 槽位（仅改变顺序，不改变占用情况）。
+ * @param {number} from
+ * @param {number} to
+ * @sideEffect 写 localStorage（KEYS.BOOKMARKS）；重渲染列表；弹 toast
+ */
+function bmListMove(from, to) {
+  var slots = getBookmarks();
+  if (!Domain.Bookmarks.move(slots, from, to)) return;
+  saveBookmarks(slots);
+  renderBmList();
+  showToast('✓ 已调整顺序');
+}
+
+function openBmPopup(idx) {
+  bmEditIdx = idx;
+  const bms = getBookmarks();
+  const d = bms[idx];
+  document.getElementById('bmUrlInput').value = d ? (d.url || '') : '';
+  document.getElementById('bmNameInput').value = d ? (d.name || '') : '';
+  _bmCurrentIcon = d ? (d.icon || '') : '';
+  updateIconStatus();
+  document.getElementById('bmIconUrlInput').value = _bmCurrentIcon;
+  if (d) {
+    document.getElementById('bmTitle').textContent = '编辑收藏';
+    document.getElementById('bmSaveBtn').textContent = '保存';
+    document.getElementById('bmDeleteBtn').style.display = '';
+  } else {
+    document.getElementById('bmTitle').textContent = '新建收藏';
+    document.getElementById('bmSaveBtn').textContent = '添加';
+    document.getElementById('bmDeleteBtn').style.display = 'none';
+  }
+  bmResetPage();
+  requestAnimationFrame(function(){ PopupManager.open('bmPopup'); });
+  animateCloseBookmarkBar();
+}
+
+function updateIconStatus() {
+  var label = '自动获取';
+  if (_bmCurrentIcon && _bmCurrentIcon.startsWith('data:')) label = '本地上传';
+  else if (_bmCurrentIcon && _bmCurrentIcon.startsWith('http')) label = '自动获取';
+  else if (_bmCurrentIcon && _bmCurrentIcon.startsWith('__char__')) label = '首字: ' + _bmCurrentIcon.replace('__char__','');
+  document.getElementById('bmIconStatus').textContent = label;
+  updateIconPreview();
+}
+
+function updateIconPreview() {
+  var el = document.getElementById('bmIconPreviewSmall');
+  if (!el) return;
+  el.innerHTML = '';
+  el.classList.remove('has-icon');
+  if (!_bmCurrentIcon) { el.textContent = '空'; }
+  else if (_bmCurrentIcon.startsWith('__char__')) { el.textContent = _bmCurrentIcon.replace('__char__',''); el.classList.add('has-icon'); }
+  else if (_bmCurrentIcon.startsWith('http') || _bmCurrentIcon.startsWith('data:')) { var img=document.createElement('img'); img.src=_bmCurrentIcon; img.onerror=function(){ el.textContent='×'; }; el.appendChild(img); el.classList.add('has-icon'); }
+  else { el.textContent = '空'; }
+}
+
+function bmShowPage1() {
+  var popup = document.getElementById('bmPopup');
+  popup.classList.remove('bm-page2');
+}
+function bmShowPage2() {
+  var popup = document.getElementById('bmPopup');
+  popup.classList.add('bm-page2');
+}
+function bmResetPage() {
+  var popup = document.getElementById('bmPopup');
+  popup.classList.remove('bm-page2');
+}
+
+function autoGetFavicon(url) {
+  if (!url) return '';
+  if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+  try { var d = new URL(url).hostname; return 'https://' + d + '/favicon.ico'; } catch(e) { return ''; }
+}
+
+function bmAutoIcon() {
+  var url = document.getElementById('bmUrlInput').value.trim();
+  if (!url) { showToast('请先输入网址'); bmShowPage1(); return; }
+  var fav = autoGetFavicon(url);
+  if (fav) {
+    _bmCurrentIcon = fav;
+    document.getElementById('bmIconUrlInput').value = fav;
+    updateIconStatus();
+    showToast('已获取网站图标');
+  } else {
+    // Fallback: first char of title
+    var firstChar = url.charAt(0).toUpperCase() || '🔗';
+    if (/[\u4e00-\u9fff]/.test(firstChar) || /[a-zA-Z]/.test(firstChar)) {
+      _bmCurrentIcon = '__char__' + firstChar;
+    } else {
+      _bmCurrentIcon = '__char__' + '🔗';
+    }
+    updateIconStatus();
+    showToast('未获取到图标，使用首字');
+  }
+  var iconUrl = document.getElementById('bmIconUrlInput').value.trim();
+  if (iconUrl && iconUrl.startsWith('http')) { _bmCurrentIcon = iconUrl; updateIconStatus(); }
+  bmShowPage1();
+}
+
+function bmIconUrlChanged() {
+  var val = document.getElementById('bmIconUrlInput').value.trim();
+  if (val.startsWith('http') || val.startsWith('data:')) {
+    _bmCurrentIcon = val;
+    updateIconStatus();
+  }
+}
+
+function bmUrlChanged() {
+  var nameEl = document.getElementById('bmNameInput');
+  var url = document.getElementById('bmUrlInput').value.trim();
+  // Auto-fill name if empty
+  if (!nameEl.value.trim() && url) {
+    try { var u = new URL(url); nameEl.value = u.hostname.replace('www.', '').split('.')[0]; } catch(e) {}
+  }
+}
+
+/**
+ * 上传收藏图标：压缩到 CONFIG.ICON_MAX_PX 的小图再入库。
+ * 缺陷修复：旧实现直接存原图 dataURL，几个图标就能把配额吃满。
+ * @param {HTMLInputElement} input file 控件
+ * @sideEffect 更新 _bmCurrentIcon 与预览
+ */
+function handleIconUpload(input) {
+  var f = input.files[0];
+  input.value = '';
+  if (!f) return;
+  compressImage(f, CONFIG.ICON_MAX_PX, 'image/png')
+    .then(function (url) {
+      if (dataUrlBytes(url) > CONFIG.ICON_MAX_BYTES) { showToast('图标过大，请换一张'); return; }
+      _bmCurrentIcon = url;
+      document.getElementById('bmIconUrlInput').value = url;
+      updateIconStatus();
+      showToast('✓ 图标已上传');
+    })
+    .catch(function () { showToast('图片处理失败，请换一张图片'); });
+}
+
+/**
+ * 关闭收藏编辑浮层（弹窗流程入口）。
+ * @sideEffect 由 PopupManager 回调 onBmPopupClosed() 完成收尾
+ */
+function closeBmPopup() {
+  if (!PopupManager.isOpen('bmPopup')) return;
+  PopupManager.close('bmPopup');
+}
+
+/**
+ * bmPopup 关闭后的收尾：复位编辑态、刷新预览，并回到"收藏管理列表"或书签栏。
+ * 由登记表的 onClose 调用，因此内部改用 PopupManager.open，避免递归。
+ * @sideEffect 改 DOM；可能打开列表或书签栏
+ */
+function onBmPopupClosed() {
+  bmEditIdx = -1;
+  _bmCurrentIcon = '';
+  updateIconPreview();
+  var fromList = _bmFromList;
+  _bmFromList = false;
+  if (fromList) { renderBmList(); PopupManager.open('bmListPopup'); return; }
+  _bmSkipBarClose = true;
+  showBookmarkBar();
+}
+
+/**
+ * 保存 / 新建收藏槽位。
+ * @returns {void}
+ * @sideEffect 写 localStorage（KEYS.BOOKMARKS）；关弹窗；弹 toast
+ * 说明：下标非法或写入失败（配额超限）时明确提示，不再静默"假装成功"。
+ */
+function saveBookmark() {
+  var name = document.getElementById('bmNameInput').value.trim();
+  let url = document.getElementById('bmUrlInput').value.trim();
+  if (!url) { showToast('请输入链接地址'); return; }
+  if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+  // Auto-fill name from URL if empty
+  if (!name) {
+    try { var u = new URL(url); name = u.hostname.replace('www.', '').split('.')[0]; } catch(e) { name = url; }
+  }
+  var icon = _bmCurrentIcon;
+  // Auto-get icon if none set
+  if (!icon) {
+    icon = autoGetFavicon(url);
+    if (!icon) {
+      var firstChar = (name || url).charAt(0).toUpperCase();
+      icon = '__char__' + (firstChar || '🔗');
+    }
+  }
+  // 缺陷修复：旧实现不校验下标，越界时会写出数组的 -1 属性（JSON 往返后被丢弃），
+  // 界面却照样提示"已保存"——属于静默失败。
+  if (!Domain.Bookmarks.isValidIndex(bmEditIdx, BM_TOTAL)) {
+    showToast('收藏位置无效，请重新打开书签栏');
+    return;
+  }
+  const isAdd = document.getElementById('bmSaveBtn').textContent === '添加';
+  const bms = getBookmarks();
+  bms[bmEditIdx] = { icon: icon, name: name, url: url, iconMode: icon.startsWith('__char__') ? 'char' : (icon.startsWith('data:') ? 'upload' : 'auto') };
+  // 缺陷修复：写入失败（配额超限）时不再假装成功
+  if (!saveBookmarks(bms)) { showToast('保存失败：本地存储空间不足'); return; }
+  closeBmPopup();
+  showToast('✓ 已' + (isAdd ? '添加' : '保存'));
+}
+
+/**
+ * 按槽位删除收藏；是否压缩（自动补位）取决于 §1 的收藏偏好。
+ * @param {number} idx 槽位下标
+ * @sideEffect 写存储（KEYS.BOOKMARKS）
+ */
+function removeBookmarkAt(idx) {
+  saveBookmarks(Domain.Bookmarks.removeAt(getBookmarks(), idx, isCompact()));
+}
+
+/**
+ * 删除"编辑中"的收藏（弹窗流程）。
+ * @sideEffect 写存储；关弹窗；重开书签栏；弹 toast
+ */
+function deleteBookmark() {
+  if (bmEditIdx < 0) return;
+  removeBookmarkAt(bmEditIdx);
+  closeBmPopup();
+  showToast('✓ 已删除');
+}
+function openBmList() {
+  closeBookmarkBar();
+  renderBmList();
+  PopupManager.open('bmListPopup');
+}
+function closeBmListPopup() { PopupManager.close('bmListPopup'); }
+function renderBmList() {
+  const bms = getBookmarks();
+  const wrap = document.getElementById('bmListWrap');
+  wrap.innerHTML = '';
+  var hasAny = false;
+  for (let i = 0; i < BM_TOTAL; i++) {
+    if (!bms[i]) continue;
+    hasAny = true;
+    const idx = i;
+    const item = document.createElement('div'); item.className = 'bm-list-item';
+    item.draggable = true;
+    item.dataset.idx = idx;
+    const ic = createBookmarkIcon(bms[idx], 'bm-li-icon');
+    const nm = document.createElement('span'); nm.className = 'bm-li-name'; nm.textContent = bms[idx].name;
+    const del = document.createElement('button'); del.className = 'bm-li-del'; del.textContent = '\u2715';
+    del.draggable = false;
+    del.addEventListener('mousedown', function(e) { e.stopPropagation(); });   // 拖动手柄不落在删除键上
+    del.addEventListener('click', function(e) { e.stopPropagation(); bmListDelete(idx); });
+    item.appendChild(ic); item.appendChild(nm); item.appendChild(del);
+    item.addEventListener('click', function() { if (_bmDragIdx < 0) bmListEdit(idx); });
+    item.addEventListener('contextmenu', function(e) { e.preventDefault(); e.stopPropagation(); bmListEdit(idx); });
+    /* —— 拖动排序：拖到谁的槽位就插到谁那里 —— */
+    item.addEventListener('dragstart', function(e) {
+      _bmDragIdx = idx;
+      item.classList.add('dragging');
+      if (e.dataTransfer) { e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(idx)); } catch (err) {} }
+    });
+    item.addEventListener('dragend', function() {
+      item.classList.remove('dragging');
+      var t = wrap.querySelector('.drag-target');
+      if (t) t.classList.remove('drag-target');
+      _bmDragIdx = -1;
+    });
+    item.addEventListener('dragover', function(e) {
+      if (_bmDragIdx < 0 || _bmDragIdx === idx) return;
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+      item.classList.add('drag-target');
+    });
+    item.addEventListener('dragleave', function() { item.classList.remove('drag-target'); });
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      item.classList.remove('drag-target');
+      var from = _bmDragIdx;
+      _bmDragIdx = -1;
+      if (from >= 0) bmListMove(from, idx);
+    });
+    wrap.appendChild(item);
+  }
+  if (!hasAny) {
+    wrap.innerHTML = '<div class="bm-list-empty">暂无收藏</div>';
+  }
+}
+function bmListEdit(idx) {
+  _bmFromList = true;
+  closeBmListPopup();
+  openBmPopup(idx);
+}
+/**
+ * 删除收藏（管理列表流程）。
+ * @param {number} idx 槽位下标
+ * @sideEffect 写存储；重渲染列表；弹 toast
+ */
+function bmListDelete(idx) {
+  if (idx < 0) return;
+  removeBookmarkAt(idx);
+  renderBmList();
+  showToast('\u2713 已删除');
+}
+function bmListAdd() {
+  _bmFromList = true;
+  closeBmListPopup();
+  var nextIdx = Domain.Bookmarks.nextFree(getBookmarks());
+  if (nextIdx < 0) { _bmFromList = false; showToast('收藏已满（最多20个）'); return; }
+  bmEditIdx = nextIdx;
+  _bmCurrentIcon = '';
+  document.getElementById('bmUrlInput').value = '';
+  document.getElementById('bmNameInput').value = '';
+  document.getElementById('bmIconStatus').textContent = '自动获取';
+  document.getElementById('bmSaveBtn').textContent = '添加';
+  document.getElementById('bmDeleteBtn').style.display = 'none';
+  updateIconPreview();
+  openBmPopup(nextIdx);
+}
+/* 注：原先这里还有一条"点空白关闭收藏管理列表"的文档级监听，
+   P3 起由 §4 PopupManager 的登记表统一处理（bmListPopup 无 triggers）。 */
+
+
+
+function showWpPicker(){
+  PopupManager.open('wpPickerOverlay');
+  var opts = document.querySelectorAll('.wp-pick-opt');
+  for (var i = 0; i < opts.length; i++) {
+    var o = opts[i];
+    o.style.animation = 'none';
+    o.offsetHeight;
+    o.style.animation = 'wpOptIn .6s ease forwards';
+    o.style.animationDelay = (i * 0.05) + 's';
+  }
+  var t = currentBgType();
+  for (var j = 0; j < opts.length; j++) {
+    opts[j].classList.toggle('active', opts[j].dataset.wp === t);
+  }
+  markPopupChange();
+}
+function hideWpPicker(){ PopupManager.close('wpPickerOverlay'); }
+function wpPickApply(t){applyWallpaper(t)}
+function previewCustomColor(){
+  var v = document.getElementById('customColorInput').value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('colorPreview').style.background = v;
+}
+function applyCustomColor(){
+  var v = document.getElementById('customColorInput').value.trim();
+  if (!/^#[0-9a-fA-F]{6}$/.test(v)) { v = '#FFFFFF'; document.getElementById('customColorInput').value = v; }
+  Store.setSetting('customColor', v);
+  document.getElementById('colorPreview').style.background = v;
+  document.documentElement.style.setProperty('--custom-text-color', v);
+  document.documentElement.classList.add('custom-text');
+}
+function clearCustomColor(){
+  document.documentElement.classList.remove('custom-text');
+  document.documentElement.style.removeProperty('--custom-text-color');
+}
+function setFontColor(m){
+  Store.setSetting('font', m);
+  document.documentElement.classList.remove('gray-text','black-text','custom-text');
+  document.body.style.color = '';
+  if (m === 'gray') { document.documentElement.classList.add('gray-text'); document.getElementById('customExpand').classList.remove('show'); }
+  else if (m === 'black') { document.documentElement.classList.add('black-text'); document.getElementById('customExpand').classList.remove('show'); }
+  else if (m === 'custom') { Store.setSetting('font', 'custom'); applyCustomColor(); document.getElementById('customExpand').classList.add('show'); }
+  else { document.getElementById('customExpand').classList.remove('show'); }
+  markActiveColor(m);
+  markPopupChange();
+}
+function initCustomColor(){
+  var cf = Store.setting('font');
+  if (cf === 'custom') {
+    var cc = Store.setting('customColor');
+    document.getElementById('customColorInput').value = cc;
+    document.getElementById('colorPreview').style.background = cc;
+    document.documentElement.style.setProperty('--custom-text-color', cc);
+    document.documentElement.classList.add('custom-text');
+    document.getElementById('customExpand').classList.add('show');
+    markActiveColor('custom');
+    markPopupChange();
+  }
+}
+(function(){var m=Store.setting('font');if(m==='gray'){document.documentElement.classList.add('gray-text')}else if(m==='black'){document.documentElement.classList.add('black-text')};markActiveColor(m)})();
+(function(){var t=currentBgType();document.querySelectorAll('.wp-opt').forEach(function(o){if(o.dataset.wp===t)o.classList.add('active')})})();
+/* 缺陷修复：旧实现全局阻止 selectstart。Chromium 下这会连 input/textarea 一起
+   禁选，导致聊天里选不中、复制不了 AI 回复与代码（Firefox 行为还不一致）。
+   现在仅在非输入区域阻止选择。 */
+document.addEventListener('selectstart', function (e) {
+  if (e.target.closest('input, textarea, select, [contenteditable="true"], .msg-bubble, pre, code')) return;
+  e.preventDefault();
+});
+document.addEventListener('dblclick',function(e){
+  var t=e.target;
+  /* 缺陷修复：可编辑区域与聊天正文放行，保留双击选词与复制能力 */
+  if (t.closest('input, textarea, select, [contenteditable="true"], .msg-bubble, pre, code')) return;
+  e.preventDefault();
+  if(t.closest('.bookmark-bar')||t.closest('#bmPopup')||t.closest('.bm-list-popup')||
+     t.closest('.settings-popup')||t.closest('.settings-btn')||
+     t.closest('.popup')||
+     t.closest('button')||t.closest('input')||t.closest('textarea')||t.closest('a')||
+     t.closest('select')||t.closest('.engine-dropdown')||
+      t.closest('.search-wrap')||t.closest('.engine-btn')||
+      t.closest('#toast')||t.closest('.bm-slot')||
+     t.closest('.search-btn')||
+     t.closest('.wp-picker-overlay')||t.closest('.wp-picker')||
+     t.closest('#clock')||t.closest('#motto'))return;
+  showWpPicker();
+});
+
+  // ===== §5 应用层 · 对外接口 =====
+  // P3b 起页面内交互全部走 data-action 事件委托，window.L 不再被页面自身依赖。
+  // 下面只保留"控制台调试 / 自动化测试 / 将来扩展"用得上的主入口（原来 61 个）。
+  window.L = {
+    /* 状态与调试 */
+    Domain: Domain,
+    showToast: showToast,
+    /* 浮层 */
+    closePopup: closePopup,
+    toggleSettings: toggleSettings,
+    editMotto: editMotto,
+    openLunarPopup: openLunarPopup,
+    /* 外观 */
+    applyWallpaper: applyWallpaper,
+    setFontColor: setFontColor,
+    setCardOpacity: setCardOpacity,
+    setCardBlur: setCardBlur,
+    setCompactMode: setCompactMode,
+    setDisplayMode: setDisplayMode,
+    resetDefaults: resetDefaults,
+    /* 收藏 */
+    showBookmarkBar: showBookmarkBar,
+    openBmPopup: openBmPopup,
+    closeBmPopup: closeBmPopup,
+    openBmList: openBmList,
+    closeBmListPopup: closeBmListPopup,
+    saveBookmark: saveBookmark,
+    deleteBookmark: deleteBookmark,
+    handleIconUpload: handleIconUpload,
+    /* 其它 */
+    doSearch: doSearch,
+    toggleEngine: toggleEngine,
+    showWpPicker: showWpPicker,
+    hideWpPicker: hideWpPicker
+  };
+})();
+
+};

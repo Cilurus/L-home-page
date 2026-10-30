@@ -3,7 +3,7 @@
 一个**单文件**的浏览器新标签页 / 起始页：零依赖、零构建、双击即用。
 深色玻璃质感 + 极简布局，只做四件事：看时间、搜索、换壁纸、存收藏。
 
-![版本](https://img.shields.io/badge/version-V2.2.1-2ea44f)
+![版本](https://img.shields.io/badge/version-V3.0.0%20F-2ea44f)
 ![许可](https://img.shields.io/badge/license-MIT-blue)
 
 ## 在线使用
@@ -18,6 +18,28 @@
 下载得到的 HTML 双击即可用，不需要安装任何东西。
 
 ---
+
+## 浏览器扩展（V3.0.0「F」）
+
+同一个起始页现在也能**整屏覆盖到 DeepSeek 网页上**：打开 `chat.deepseek.com` 先看到起始页，
+右上角点鲸鱼回到原页面，原页面右上角留一个「F」圆标再切回来。
+
+| 交互 | 位置 | 行为 |
+|---|---|---|
+| 鲸鱼圆钮 | 起始页右上角，齿轮左边 | 收起浮层，露出 DeepSeek 原页面 |
+| 「F」圆标 | DeepSeek 原页面右上角 | 重新展开起始页 |
+| `deepseek` 引擎 | 搜索引擎下拉 | 搜索框下移到底部，上方开一个对话大窗（真实聊天区） |
+
+选 `deepseek` 后，底部输入框回车会把内容**代填进 DeepSeek 的输入框并发送**，回复就地显示在上方窗口里。
+
+```bash
+# 安装：chrome://extensions → 开发者模式 → 加载已解压的扩展程序 → 选 extension/
+node tools/build-extension.mjs    # 改了 index - new.html 之后必须重新构建
+```
+
+> 两个必须知道的约束：DeepSeek 返回 `frame-ancestors 'none'`，iframe 嵌不了，所以走的是
+> 「Shadow DOM 注入 + 遮罩挖洞」；扩展不申请任何权限，数据存 `LSP:` 前缀的 localStorage。
+> 细节见 [extension/README.md](extension/README.md)。
 
 ## 功能
 
@@ -104,13 +126,24 @@ curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: text/html" \
 .
 ├── index - new.html                 # 主文件：全部 HTML / CSS / JS（唯一交付物）
 ├── index.html                       # 站点根路径的跳转页（指向主文件，约 1 KB）
-├── .github/workflows/pages.yml       # push 到 main 自动发布到 GitHub Pages
+├── .github/workflows/pages.yml      # push 到 main 自动发布到 GitHub Pages
+├── extension/                       # 浏览器扩展（V3.0.0「F」）
+│   ├── manifest.json                # MV3，仅匹配 chat.deepseek.com
+│   ├── content/
+│   │   ├── startpage-data.js        # 构建产物（勿手改）
+│   │   └── shell.js                 # 注入外壳：鲸鱼 / F / 引擎 / 挖洞 / 代填
+│   ├── assets/                      # 16/32/48/128 图标
+│   └── README.md
 ├── archive/                         # 历史版本快照（只增不删，可随时回退）
 ├── tests/                           # Node 原生测试（vm 沙箱跑真实页面代码）
-│   └── harness.mjs                  # 极简 DOM 桩 + localStorage 桩
+│   ├── harness.mjs                  # 极简 DOM 桩 + localStorage 桩
+│   ├── extension.test.mjs           # 扩展资源与契约
+│   └── mock/deepseek.html           # 端到端用的 DeepSeek 结构 mock 页
 ├── tools/
 │   ├── verify.mjs                   # 结构自检：语法、键名收敛、CSS 括号、白名单对齐…
 │   ├── check-all.mjs                # 一键跑全部检查
+│   ├── build-extension.mjs          # 主文件 → 扩展资源包
+│   ├── make-icons.mjs               # 渲染扩展图标 PNG
 │   └── history/                     # 历次重构变换脚本（可复现审计）
 ├── CHANGELOG.md                     # 改动记录（按版本/阶段）
 ├── README.md
@@ -132,7 +165,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: text/html" \
 只依赖 Node.js（用于跑测试，页面本身零依赖）：
 
 ```bash
-node tools/check-all.mjs      # 全部检查（结构自检 + 7 组测试）
+node tools/check-all.mjs      # 全部检查（结构自检 + 8 组测试）
 node tools/verify.mjs         # 仅结构自检
 node --test tests/p2.test.mjs tests/p3.test.mjs tests/p4.test.mjs   # 单跑某组测试
 ```
@@ -148,7 +181,7 @@ node --test tests/p2.test.mjs tests/p3.test.mjs tests/p4.test.mjs   # 单跑某�
 
 ## 版本
 
-当前 **V2.2.1**。完整改动见 [CHANGELOG.md](CHANGELOG.md)。
+当前 **V3.0.0「F」**（起始页本体仍是 V2.2.1 的 UI，本版新增扩展形态）。完整改动见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 许可
 
