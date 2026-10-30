@@ -19,8 +19,7 @@ const steps = [
   ['事件委托回归', ['--test', 'tests/p3b.test.mjs']],
   ['领域层回归', ['--test', 'tests/p4.test.mjs']],
   ['性能收尾回归', ['--test', 'tests/p7.test.mjs']],
-  ['新功能回归（模糊/拖动/白名单）', ['--test', 'tests/p8.test.mjs']],
-  ['扩展资源与契约', ['--test', 'tests/extension.test.mjs']]
+  ['新功能回归（模糊/拖动/白名单）', ['--test', 'tests/p8.test.mjs']]
 ];
 
 let failed = 0;

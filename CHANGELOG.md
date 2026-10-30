@@ -12,7 +12,6 @@
 | V2.1.1 | 2026-10-01 | 模糊滑块改 1~10 档，与透明卡片一致 | `archive/index-new-v2.1.1-blur-scale-2026-10-01.html` |
 | V2.2.0 | 2026-10-30 | 界面简化：移除 API / 个人资料 / 人设 / 收发信 | `archive/index-new-v2.2.0-simplify-2026-10-30.html` |
 | **V2.2.1** | **2026-10-30** | **站点图标改为白色圆环（脱离 API）、深度清理聊天/AI 残留代码、补 README + MIT 协议** | `archive/index-new-v2.2.1-favicon-cleanup-2026-10-30.html` |
-| **V3.0.0「F」** | **2026-10-30** | **新增浏览器扩展形态：把起始页整屏覆盖到 DeepSeek 网页；鲸鱼/F 双向切换；搜索引擎新增 deepseek（挖洞露出真实聊天区 + 回车代填发送）** | `archive/index-new-v3.0.0-F-2026-10-30.html` |
 
 - `archive/` 保存全部历史版本（含重构前手工备份的 9 个 `index - new.*.html`），**只增不删**。
 - 每个阶段结束先落快照，再进下一阶段；回退 = 换回对应文件。
@@ -31,50 +30,6 @@
 | P4 | §2 领域层 `Domain`（农历 / 文本 / 收藏槽位 / 会话组装）纯函数化 + 单测 | ✅ 2026-10-01 |
 | P5 | §A CSS 令牌化、主题变量化、z-index 阶梯（届时接管 PopupManager 的 z） | ⏳ 待确认 |
 | P6 | 收尾：删死代码、补全 JSDoc、版本号升 V2.0.0 | ⏳ |
-
----
-
-## V3.0.0「F」（2026-10-30）浏览器扩展形态
-
-起始页 UI 本体未变（仍是 V2.2.1 那套），本版新增**第二种交付形态**：一个 MV3 扩展，把起始页整屏覆盖到 DeepSeek 网页上。
-
-### 关键决策：为什么不是 iframe
-
-DeepSeek 返回 `content-security-policy: frame-ancestors 'none'`，任何 iframe 都无法加载它
-（扩展页嵌、同站自嵌都不行）。因此改为：**Shadow DOM 注入真页面 + 遮罩挖洞**。
-
-- 宿主 `#lsp-root-host` 挂在 `documentElement`，`z-index: 2147483000`，自身 `pointer-events: none`
-- 壁纸层 `#bg` 与点击屏蔽层用同一份 `mask-composite: exclude` 挖洞，洞里透出真实聊天区
-- `mask` 不影响命中测试，所以洞口靠 `pointer-events` 放行点击，而不是靠 `clip-path`
-
-### 新增
-
-| 项 | 说明 |
-|---|---|
-| 鲸鱼圆钮 | 起始页右上角、齿轮左侧，36px 圆形，点一下收起浮层露出 DeepSeek 原页面 |
-| 「F」圆标 | DeepSeek 原页面右上角，点一下重新展开起始页 |
-| `deepseek` 引擎项 | 下拉新增一项（鲸鱼图标 + 名称），选中后搜索框下移到底部 |
-| 对话大窗 | 上方自动挖洞，露出真实聊天区；位置由「页面里最大的可纵向滚动容器」测出，空会话退化为居中 66vw |
-| 回车代填 | 底部输入框回车 → 原生 setter 写入 DeepSeek 的 textarea + `input` 事件 → 点发送按钮（找不到则派发 Enter 键序列） |
-
-### 工程
-
-- `tools/build-extension.mjs`：从 `index - new.html` 抽出 CSS / 结构 / 三段脚本，把 `html.xxx`、`body`
-  改写成 `:host(...)`、`:host`，剔除内联 `<script>`，输出 `extension/content/startpage-data.js`（约 159 KB）
-- `extension/content/shell.js`：注入外壳。主脚本用「伪 document」执行（`getElementById` 走 shadowRoot、
-  `documentElement` 指宿主元素、`body` 指 shadowRoot、`DOMContentLoaded` 补一次异步触发），**主文件零改动**
-- 数据隔离：起始页所有键名加 `LSP:` 前缀，避开 DeepSeek 自己的 localStorage
-- 权限：`manifest.json` 无 `permissions` 字段；不读 cookie、不发网络请求
-- 图标：`tools/make-icons.mjs` 用无头 Chrome 渲染 16/32/48/128 PNG，形状取自 `shell.js` 里的同一个鲸鱼路径
-- 鲸鱼图形改用 DeepSeek 官方 logo 路径（simple-icons，CC0），16px 下仍可辨识
-
-### 验证
-
-- `tests/extension.test.mjs`：manifest 契约、构建产物四个导出、`:host` 改写完整性、无 `<script>` 残留、
-  外壳关键钩子、同源指纹（改了主文件忘记构建会失败）
-- `tests/mock/deepseek.html`：复刻「侧栏 + 可滚动消息区 + 底部输入框」的 mock 页，无头 Chrome 跑通
-  注入 → 鲸鱼 → F → deepseek 模式 → 代填发送 → 切回搜索引擎，全程无 JS 报错
-- `node tools/check-all.mjs` 由 8 项扩到 **9 项全绿**
 
 ---
 
